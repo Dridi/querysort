@@ -8,8 +8,8 @@
  * 
  * A returned non-NULL URL must be freed by the caller.
  */
-char
-* querysort(const char *url);
+char *
+querysort(const char *url);
 
 struct query_param {
   const char *value;
