@@ -1,6 +1,6 @@
 #include<stdio.h>
 
-#include "querysort.c"
+#include "querysort.h"
 
 int
 main(const int argc, const char *argv[])
