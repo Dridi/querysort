@@ -40,19 +40,17 @@
  * 
  * A returned non-NULL URL must be freed by the caller.
  */
-extern char
-* querysort(const char *url);
+extern char *
+querysort(const char *url);
 
 struct query_param {
   const char *value;
   short length;
 };
 
-typedef struct query_param param;
-
 static void   sort_params(const char *url, const int position, char *sorted_url);
 static int   count_params(const char *url, const int position);
-static void search_params(const char *query_string, const int count, param params[]);
+static void search_params(const char *query_string, const int count, struct query_param params[]);
 static int compare_params(const void *a, const void *b);
-static void  apply_params(const param params[], const int count, char *sorted_url, int position);
+static void  apply_params(const struct query_param params[], const int count, char *sorted_url, int position);
 

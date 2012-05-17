@@ -62,9 +62,9 @@ static void
 sort_params(const char *url, const int position, char *sorted_url)
 {
 	int count = count_params(url, position);
-	param params[count];
+	struct query_param params[count];
 	search_params(&url[position], count, params);
-	qsort(params, count, sizeof(param), compare_params);
+	qsort(params, count, sizeof(struct query_param), compare_params);
 	apply_params(params, count, sorted_url, position);
 }
 
@@ -79,7 +79,7 @@ count_params(const char *url, const int position)
 }
 
 static void
-search_params(const char *query_string, const int count, param params[])
+search_params(const char *query_string, const int count, struct query_param params[])
 {
 	int i = 0, p = 0;
 	do {
@@ -99,8 +99,8 @@ search_params(const char *query_string, const int count, param params[])
 static int
 compare_params(const void *a, const void *b)
 {
-	const param *x = (const param *) a;
-	const param *y = (const param *) b;
+	const struct query_param *x = (const struct query_param *) a;
+	const struct query_param *y = (const struct query_param *) b;
 	
 	int min_length = (x->length < y->length) ? x->length : y->length;
 	int compare = strncmp(x->value, y->value, min_length);
@@ -108,7 +108,7 @@ compare_params(const void *a, const void *b)
 }
 
 static void
-apply_params(const param params[], const int count, char *sorted_url, int position)
+apply_params(const struct query_param params[], const int count, char *sorted_url, int position)
 {
 	for (int p = 0; p < count; p++) {
 		memcpy(&sorted_url[position], params[p].value, params[p].length);
