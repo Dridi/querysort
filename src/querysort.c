@@ -42,11 +42,11 @@ char *
 querysort(const char *url)
 {
 	char *sorted_url = malloc(strlen(url) + 1);
-	
+
 	if (sorted_url == NULL) {
 		return NULL;
 	}
-	
+
 	strcpy(sorted_url, url);
 	char *query_string = strchr(sorted_url, '?');
 

@@ -31,6 +31,7 @@
  */
 
 #include<stdio.h>
+#include<uriparser/Uri.h>
 
 #include "querysort.h"
 
@@ -38,11 +39,22 @@ int
 main(const int argc, const char *argv[])
 {
 	if (argc != 2) {
-		printf("Usage : %s URL\n", argv[0]);
-		return 1;
+		printf("Usage : %s URI\n", argv[0]);
+		return EXIT_FAILURE;
 	}
 
-	// TODO validate URL
+	UriParserStateA state;
+	UriUriA uri;
+	
+	state.uri = &uri;
+
+	if (uriParseUriA(&state, argv[1]) != URI_SUCCESS) {
+		printf("Invalid URI : <%s>\n", argv[1]);
+		uriFreeUriMembersA(&uri);
+		return EXIT_FAILURE;
+	}
+
+	uriFreeUriMembersA(&uri);
 
 	char *url = querysort(argv[1]);
 
@@ -51,9 +63,10 @@ main(const int argc, const char *argv[])
 		free(url);
 	}
 	else {
-		puts("Couldn't create the sorted URL");
+		puts("Couldn't allocate the sorted URI");
+		return EXIT_FAILURE;
 	}
 
-	return 0;
+	return EXIT_SUCCESS;
 }
 
