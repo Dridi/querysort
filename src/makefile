@@ -30,24 +30,29 @@
 # OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-SRCMAKE=cd src && $(MAKE) $@
+CC=gcc
+CFLAGS=-std=c99 -pedantic -fPIC
+LDFLAGS=-l uriparser
+EXEC=querysort querysort.so
+SRC= $(wildcard *.c)
+OBJ= $(SRC:.c=.o)
 
-all: build
+all: $(EXEC)
 
-build:
-	$(SRCMAKE)
+build: $(EXEC)
 
-querysort:
-	$(SRCMAKE)
+querysort: $(OBJ)
+	$(CC) $(LDFLAGS) -o $@ $^
 
-querysort.so:
-	$(SRCMAKE)
+querysort.so: querysort.o
+	$(CC) -shared -o $@ $^
 
-.PHONY: clean mrproper
+%*.o: %*.c
+	$(CC) -o $@ -c $< $(CFLAGS)
 
 clean:
-	$(SRCMAKE)
+	@rm -f $(OBJ)
 
-mrproper:
-	$(SRCMAKE)
+mrproper: clean
+	@rm -f $(EXEC)
 
