@@ -35,21 +35,22 @@
 
 #include "querysort.h"
 
+// End Of QueryString
+#define EOQS(c) (c == '\0' || c == '#')
+
 char *
 querysort(const char *url)
 {
-	char *sorted_url, *query_string;
-
-	sorted_url = malloc(strlen(url) + 1);
+	char *sorted_url = malloc(strlen(url) + 1);
 	
 	if (sorted_url == NULL) {
 		return NULL;
 	}
 	
 	strcpy(sorted_url, url);
-	query_string = strchr(sorted_url, '?');
+	char *query_string = strchr(sorted_url, '?');
 
-	if(query_string != NULL && query_string[1] != '\0') {
+	if(query_string != NULL && ! EOQS(query_string[1])) {
 		int position = &query_string[1] - sorted_url;
 		sort_params(url, position, sorted_url);
 	}
@@ -71,7 +72,7 @@ static int
 count_params(const char *url, const int position)
 {
 	int count = 1;
-	for (int i = position; url[i] != '\0'; i++) {
+	for (int i = position; ! EOQS(url[i]); i++) {
 		count += (url[i] == '&');
 	}
 	return count;
@@ -85,14 +86,14 @@ search_params(const char *query_string, const int count, param params[])
 		params[p].value = &query_string[i];
 		params[p].length = 0;
 		
-		while (query_string[i] != '&' && query_string[i] != '\0') {
+		while (query_string[i] != '&' && ! EOQS(query_string[i])) {
 			params[p].length++;
 			i++;
 		}
 		
 		p++;
 		i += (query_string[i] == '&');
-	} while (query_string[i] != '\0');
+	} while ( ! EOQS(query_string[i]) );
 }
 
 static int
@@ -113,7 +114,7 @@ apply_params(const param params[], const int count, char *sorted_url, int positi
 		memcpy(&sorted_url[position], params[p].value, params[p].length);
 		position += params[p].length;
 		
-		if (sorted_url[position] != '\0') {
+		if (! EOQS(sorted_url[position]) ) {
 			sorted_url[position++] = '&';
 		}
 	}
