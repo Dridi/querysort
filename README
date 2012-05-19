@@ -1,0 +1,49 @@
+QuerySort
+=========
+
+RFC 1866 querystring sorting program and library.
+
+Wat ?
+-----
+
+QuerySort's  goal is to sort the  query (or querystring) part of a URI.  The RFC
+3986 defines the form of a URI :
+ * scheme ":" hier-part [ "?" query ] [ "#" fragment ]
+
+The query can  actually hold any character,  provided that  the URI is  properly
+encoded. So how does QuerySort figure out how the querystring should be sorted ?
+
+RFC  1866 states that  an HTML form,  submited with  the GET method  of the HTTP
+protocol  should be  sent via  the querystring.  Now getting to  the point,  the
+default encoding of an HTML form is `application/x-www-form-urlencoded',  a list
+of key/value fields.
+
+So basically, QuerySort sorts the fields of a querystring.
+
+Usage
+-----
+
+$ querysort 'http://localhost/path?some=thing&an=other'
+> Prints http://localhost/path?an=other&some=thing
+
+*char sorted_uri = querysort("http://localhost/path?some=thing&an=other");
+
+if (sorted_uri != NULL) {
+    [...]
+    free(sorted_uri);
+}
+
+Why ?
+-----
+
+It is common that the order of an  `application/x-www-form-urlencoded' fields is
+not relevant. In that case, the URIs are not equal, but one could assume they're
+equivalent.  You can  use it to  know if  two different  URLs point to  the same
+resource for example.
+
+References
+----------
+
+https://tools.ietf.org/html/rfc3986#section-3
+https://tools.ietf.org/html/rfc1866#section-8.2.1
+
