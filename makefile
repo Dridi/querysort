@@ -30,24 +30,30 @@
 # OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-SRCMAKE=cd src && $(MAKE) $@
+export PROJECT=querysort
+MAKE_SRC=cd src && $(MAKE) $@
+RPM_FLAGS=
 
 all: build
 
 build:
-	$(SRCMAKE)
+	$(MAKE_SRC)
 
-querysort:
-	$(SRCMAKE)
+rpm: dist
+	PWD=pwd
+	rpmbuild -bb rpm/querysort-i386.spec $(RPM_FLAGS) --define "_sourcedir $(PWD)"
 
-querysort.so:
-	$(SRCMAKE)
+dist: $(PROJECT).tar.gz
+
+%.tar.gz:
+	@git archive -o $@ --prefix=$*/ HEAD
 
 .PHONY: clean mrproper
 
 clean:
-	$(SRCMAKE)
+	$(MAKE_SRC)
 
 mrproper:
-	$(SRCMAKE)
+	$(MAKE_SRC)
+	@rm -f $(PROJECT).tar.gz
 

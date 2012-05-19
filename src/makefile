@@ -33,22 +33,24 @@
 CC=gcc
 CFLAGS=-std=c99 -pedantic -fPIC
 LDFLAGS=-l uriparser
-EXEC=querysort querysort.so
+EXEC=$(PROJECT) $(PROJECT).so
 SRC= $(wildcard *.c)
 OBJ= $(SRC:.c=.o)
 
-all: $(EXEC)
+all: build
 
 build: $(EXEC)
 
-querysort: $(OBJ)
+$(PROJECT): $(OBJ)
 	$(CC) $(LDFLAGS) -o $@ $^
 
-querysort.so: querysort.o
+$(PROJECT).so: $(PROJECT).o
 	$(CC) -shared -o $@ $^
 
 %*.o: %*.c
 	$(CC) -o $@ -c $< $(CFLAGS)
+
+.PHONY: clean mrproper
 
 clean:
 	@rm -f $(OBJ)

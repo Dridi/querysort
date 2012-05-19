@@ -1,7 +1,7 @@
 Name:           querysort
 Version:        1.0
 Release:        1%{?dist}
-Summary:        RFC 1866 querystring sorting library
+Summary:        RFC 1866 querystring sorting program
 
 License:        FreeBSD
 Group:          System Environment/Libraries
