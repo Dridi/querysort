@@ -4,33 +4,52 @@ Release:        1%{?dist}
 Summary:        RFC 1866 querystring sorting program
 
 License:        FreeBSD
-Group:          System Environment/Libraries
-#URL:            
+Group:          System Environment/Base
+#URL:            http://github.com/dridi/querysort
 Source0:        %{name}.tar.gz
-BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 BuildRequires:  uriparser-devel >= 0.7.5
-#Requires:       uriparser
+
 
 %description
 
 
+%package devel
+Summary:        Library for %{name}
+Group:          System Environment/Libraries
+Requires:       %{name}
+
+
+%description devel
+
+
+%clean
+rm -rf %{buildroot}
+%{__make} mrproper
+
+
 %prep
 %setup -q -n %{name}
+
 
 %build
 %{__make} build %{?_smp_mflags}
 
 
 %install
-#rm -rf %{buildroot}
-#%{__make} install DESTDIR=%{buildroot}
-
+rm -rf %{buildroot}
+%{__make} install DESTDIR=%{buildroot}
 
 %files
-#%doc
+%{_bindir}
+%doc LICENSE
 
+
+%files devel
+%{_libdir}
+%{_includedir}
 
 
 %changelog
+
 

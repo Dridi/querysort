@@ -31,17 +31,35 @@
 #
 
 export PROJECT=querysort
+export INSTALL=install
+export INSTALL_PROGRAM=$(INSTALL)
+export INSTALL_DATA=$(INSTALL) -m 644
+
+export bindir=/usr/bin
+export libdir=/usr/lib
+export includedir=/usr/include
+
 MAKE_SRC=cd src && $(MAKE) $@
-RPM_FLAGS=
+
+RPMBUILD=rpmbuild
+RPMFLAGS=
 
 all: build
+
+install: all mkinstalldirs
+	$(MAKE_SRC)
+
+mkinstalldirs:
+	mkdir -p $(DESTDIR)$(bindir)
+	mkdir -p $(DESTDIR)$(libdir)
+	mkdir -p $(DESTDIR)$(includedir)
 
 build:
 	$(MAKE_SRC)
 
 rpm: dist
 	PWD=pwd
-	rpmbuild -bb rpm/querysort-i386.spec $(RPM_FLAGS) --define "_sourcedir $(PWD)"
+	$(RPMBUILD) -bb rpm/$(PROJECT)-i386.spec $(RPMFLAGS) --define "_sourcedir $(PWD)"
 
 dist: $(PROJECT).tar.gz
 
@@ -53,7 +71,9 @@ dist: $(PROJECT).tar.gz
 clean:
 	$(MAKE_SRC)
 
-mrproper:
-	$(MAKE_SRC)
+cleandist:
 	@rm -f $(PROJECT).tar.gz
+
+mrproper: clean cleandist
+	$(MAKE_SRC)
 

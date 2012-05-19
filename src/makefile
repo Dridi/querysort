@@ -33,21 +33,26 @@
 CC=gcc
 CFLAGS=-std=c99 -pedantic -fPIC
 LDFLAGS=-l uriparser
-EXEC=$(PROJECT) $(PROJECT).so
+EXEC=$(PROJECT) lib$(PROJECT).so
 SRC= $(wildcard *.c)
 OBJ= $(SRC:.c=.o)
 
 all: build
+
+install: all
+	$(INSTALL_PROGRAM) $(PROJECT)       $(DESTDIR)$(bindir)/
+	$(INSTALL_DATA)    lib$(PROJECT).so $(DESTDIR)$(libdir)/
+	$(INSTALL_DATA)    $(PROJECT).h     $(DESTDIR)$(includedir)/
 
 build: $(EXEC)
 
 $(PROJECT): $(OBJ)
 	$(CC) $(LDFLAGS) -o $@ $^
 
-$(PROJECT).so: $(PROJECT).o
-	$(CC) -shared -o $@ $^
+lib$(PROJECT).so: $(PROJECT).o
+	ld -shared -soname $@ -o $@ $^ -lc
 
-%*.o: %*.c
+%.o: %.c
 	$(CC) -o $@ -c $< $(CFLAGS)
 
 .PHONY: clean mrproper
