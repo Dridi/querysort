@@ -1,0 +1,19 @@
+Installation Instructions
+=========================
+
+Make
+----
+
+QuerySort uses make. To build and install querysort,  simply run 'make' and then
+'make install'  as root.  On Linux,  you also  need to  run  'ldconfig'  as root
+afterwards in order to update the shared library cache.
+
+The QuerySort command line  uses liburiparser for URI validation,  and uriparser
+development package is required at build time.
+
+RPM
+---
+
+QuerySort  can also be  built as  RPM packages,  simply run 'make rpm'  and then
+'rpm -i' or your favorite RPM-based package manager as root.
+
