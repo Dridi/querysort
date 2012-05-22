@@ -64,12 +64,12 @@ rm -rf %{buildroot}
 
 
 %changelog
-* Tuesday May 22 2012 Dridi Boukelmoune <dridi.boukelmoune@gmail.com> - 1.0
+* Tue May 22 2012 Dridi Boukelmoune <dridi.boukelmoune@gmail.com> - 1.0
 - Added uriparser requirement
 - Added ldconfig execution in post and postun macros
 - Moved shared object from devel to the main package
 - Added packages descriptions
 
-* Tuesday May 19 2012 Dridi Boukelmoune <dridi.boukelmoune@gmail.com> - 1.0
+* Sat May 19 2012 Dridi Boukelmoune <dridi.boukelmoune@gmail.com> - 1.0
 - Initial spec
 
