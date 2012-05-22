@@ -49,13 +49,13 @@ rm -rf %{buildroot}
 
 
 %files
-%{_bindir}
-%{_libdir}
+%{_bindir}/%{name}
+%{_libdir}/lib%{name}.so
 %doc LICENSE
 
 
 %files devel
-%{_includedir}
+%{_includedir}/%{name}.h
 
 
 %post devel -p /sbin/ldconfig
@@ -70,6 +70,7 @@ rm -rf %{buildroot}
 - Added ldconfig execution in post and postun macros
 - Moved shared object from devel to the main package
 - Added packages descriptions
+- Added filenames instead of only generic directories
 
 * Sat May 19 2012 Dridi Boukelmoune <dridi.boukelmoune@gmail.com> - 1.0
 - Initial spec
