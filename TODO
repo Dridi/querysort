@@ -4,3 +4,5 @@
 
  - find the oldest version of uriparser required
 
+ - rename shared object and add symbolic link
+
