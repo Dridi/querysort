@@ -22,6 +22,7 @@ uriparser under the New BSD license.
 %package devel
 Summary:        Header for %{name}
 Group:          System Environment/Libraries
+Requires:       %{name}
 
 
 %description devel
