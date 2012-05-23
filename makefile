@@ -39,7 +39,7 @@ export bindir=/usr/bin
 export libdir=/usr/lib
 export includedir=/usr/include
 
-MAKE_SRC=cd src && $(MAKE) $@
+MAKE_SRC=$(MAKE) -C src $@
 
 RPMBUILD=rpmbuild
 RPMFLAGS=
@@ -58,8 +58,7 @@ build:
 	$(MAKE_SRC)
 
 rpm: dist
-	PWD=pwd
-	$(RPMBUILD) -bb rpm/$(PROJECT)-i386.spec $(RPMFLAGS) --define "_sourcedir $(PWD)"
+	$(RPMBUILD) -bb rpm/$(PROJECT)-i386.spec $(RPMFLAGS) --define "_sourcedir $(shell pwd)"
 
 dist: $(PROJECT).tar.gz
 

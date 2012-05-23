@@ -32,7 +32,7 @@
 
 CC=gcc
 CFLAGS=-std=c99 -pedantic -fPIC
-LDFLAGS=-l uriparser
+LDFLAGS=-l querysort -l uriparser
 EXEC=$(PROJECT) lib$(PROJECT).so
 SRC= $(wildcard *.c)
 OBJ= $(SRC:.c=.o)
@@ -40,13 +40,14 @@ OBJ= $(SRC:.c=.o)
 all: build
 
 install: all
+	mkdir $(DESTDIR)$(includedir)/$(PROJECT)
 	$(INSTALL_PROGRAM) $(PROJECT)       $(DESTDIR)$(bindir)/
 	$(INSTALL_DATA)    lib$(PROJECT).so $(DESTDIR)$(libdir)/
-	$(INSTALL_DATA)    $(PROJECT).h     $(DESTDIR)$(includedir)/
+	$(INSTALL_DATA)    $(PROJECT).h     $(DESTDIR)$(includedir)/$(PROJECT)/
 
 build: $(EXEC)
 
-$(PROJECT): $(OBJ)
+$(PROJECT): querysort_main.o lib$(PROJECT).so
 	$(CC) $(LDFLAGS) -o $@ $^
 
 lib$(PROJECT).so: $(PROJECT).o

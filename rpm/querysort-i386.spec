@@ -55,7 +55,7 @@ rm -rf %{buildroot}
 
 
 %files devel
-%{_includedir}/%{name}.h
+%{_includedir}/%{name}/
 
 
 %post devel -p /sbin/ldconfig
@@ -65,6 +65,9 @@ rm -rf %{buildroot}
 
 
 %changelog
+* Wed May 23 2012 Dridi Boukelmoune <dridi.boukelmoune@gmail.com> - 1.0.0-1
+- Moved header in a sub-directory
+
 * Tue May 22 2012 Dridi Boukelmoune <dridi.boukelmoune@gmail.com> - 1.0.0-1
 - Added uriparser requirement
 - Added ldconfig execution in post and postun macros
