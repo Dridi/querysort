@@ -33,25 +33,31 @@
 CC=gcc
 CFLAGS=-std=c99 -pedantic -fPIC
 LDFLAGS=-l querysort -l uriparser
-EXEC=$(PROJECT) lib$(PROJECT).so
-SRC= $(wildcard *.c)
-OBJ= $(SRC:.c=.o)
+VERSION=0.0.0
+LIBVERSION=$(shell echo '$(VERSION)' | cut -d . -f 1)
+LIB=lib$(PROJECT).so
+EXEC=$(PROJECT) $(LIB).$(VERSION)
+SRC=$(wildcard *.c)
+OBJ=$(SRC:.c=.o)
+
 
 all: build
 
 install: all
-	mkdir $(DESTDIR)$(includedir)/$(PROJECT)
-	$(INSTALL_PROGRAM) $(PROJECT)       $(DESTDIR)$(bindir)/
-	$(INSTALL_DATA)    lib$(PROJECT).so $(DESTDIR)$(libdir)/
-	$(INSTALL_DATA)    $(PROJECT).h     $(DESTDIR)$(includedir)/$(PROJECT)/
+	$(INSTALL) -d $(DESTDIR)$(bindir)/ $(DESTDIR)$(libdir)/ $(DESTDIR)$(includedir)/$(PROJECT)/
+	$(INSTALL_PROGRAM) $(PROJECT)        $(DESTDIR)$(bindir)/
+	$(INSTALL_DATA) -s $(LIB).$(VERSION) $(DESTDIR)$(libdir)/
+	$(INSTALL_DATA)    $(PROJECT).h      $(DESTDIR)$(includedir)/$(PROJECT)/
+	ln -s $(LIB).$(VERSION)    $(DESTDIR)$(libdir)/$(LIB).$(LIBVERSION)
+	ln -s $(LIB).$(LIBVERSION) $(DESTDIR)$(libdir)/$(LIB)
 
 build: $(EXEC)
 
-$(PROJECT): querysort_main.o lib$(PROJECT).so
+$(PROJECT): querysort_main.o $(LIB).$(VERSION)
 	$(CC) $(LDFLAGS) -o $@ $^
 
-lib$(PROJECT).so: $(PROJECT).o
-	ld -shared -soname $@ -o $@ $^ -lc
+$(LIB).$(VERSION): $(PROJECT).o
+	ld -shared -soname $(LIB).$(LIBVERSION) -o $@ $^ -lc
 
 %.o: %.c
 	$(CC) -o $@ -c $< $(CFLAGS)

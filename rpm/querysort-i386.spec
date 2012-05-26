@@ -50,21 +50,27 @@ rm -rf %{buildroot}
 
 %files
 %{_bindir}/%{name}
-%{_libdir}/lib%{name}.so
+%{_libdir}/lib%{name}.so.*
 %doc LICENSE
 
 
 %files devel
+%{_libdir}/lib%{name}.so
 %{_includedir}/%{name}/
 
 
-%post devel -p /sbin/ldconfig
+%post -p /sbin/ldconfig
 
 
-%postun devel -p /sbin/ldconfig
+%postun -p /sbin/ldconfig
 
 
 %changelog
+* Sat May 26 2012  Dridi Boukelmoune <dridi.boukelmoune@gmail.com> - 1.0.0-1
+- Added versionned shared objects
+- Moved unversionned shared object to the devel package
+- Moved %post and %postun from devel to the main package
+
 * Wed May 23 2012 Dridi Boukelmoune <dridi.boukelmoune@gmail.com> - 1.0.0-1
 - Moved header in a sub-directory
 
