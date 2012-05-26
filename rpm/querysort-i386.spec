@@ -40,12 +40,12 @@ rm -rf %{buildroot}
 
 
 %build
-%{__make} build %{?_smp_mflags}
+%{__make} build VERSION=%{version} %{?_smp_mflags}
 
 
 %install
 rm -rf %{buildroot}
-%{__make} install DESTDIR=%{buildroot}
+%{__make} install DESTDIR=%{buildroot} VERSION=%{version}
 
 
 %files
