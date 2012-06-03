@@ -8,6 +8,7 @@ Group:          System Environment/Base
 #URL:            http://github.com/dridi/querysort
 Source0:        %{name}.tar.gz
 
+Provides:       libquerysort.so.1
 Requires:       uriparser >= 0.7.5
 BuildRequires:  uriparser-devel >= 0.7.5
 
