@@ -44,7 +44,9 @@ MAKE_SRC=$(MAKE) -C src $@
 RPMBUILD=rpmbuild
 RPMFLAGS=
 
-all: build
+CHECK_QUERYSTRING=a=1&a=2&b&b=3&c&d=4
+
+all: build check
 
 install: all mkinstalldirs
 	$(MAKE_SRC)
@@ -53,6 +55,11 @@ mkinstalldirs:
 	mkdir -p $(DESTDIR)$(bindir)
 	mkdir -p $(DESTDIR)$(libdir)
 	mkdir -p $(DESTDIR)$(includedir)
+
+check: build
+#	RANDOM_QUERYSTRING="$(shell echo '$(CHECK_QUERYSTRING)'|tr '&' '\n'|sort -R|tr '\n' '&'|head -c19)"
+#	echo "check  : $(CHECK_QUERYSTRING)"
+#	echo "random : $${RANDOM_QUERYSTRING:-toto}"
 
 build:
 	$(MAKE_SRC)

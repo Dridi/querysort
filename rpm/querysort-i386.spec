@@ -5,7 +5,7 @@ Summary:        RFC 1866 querystring sorting library
 
 License:        FreeBSD
 Group:          System Environment/Base
-#URL:            http://github.com/dridi/querysort
+URL:            http://github.com/dridi/querysort
 Source0:        %{name}.tar.gz
 
 Provides:       libquerysort.so.1
@@ -67,7 +67,11 @@ rm -rf %{buildroot}
 
 
 %changelog
-* Sat May 26 2012  Dridi Boukelmoune <dridi.boukelmoune@gmail.com> - 1.0.0-1
+* Sun Jun 03 2012 Dridi Boukelmoune <dridi.boukelmoune@gmail.com> - 1.0.0-1
+- Added shared object providing in the main package
+- Uncommented project URL
+
+* Sat May 26 2012 Dridi Boukelmoune <dridi.boukelmoune@gmail.com> - 1.0.0-1
 - Added versionned shared objects
 - Moved unversionned shared object to the devel package
 - Moved %post and %postun from devel to the main package
