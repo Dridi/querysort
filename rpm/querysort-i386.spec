@@ -8,7 +8,7 @@ Group:          System Environment/Base
 URL:            http://github.com/dridi/querysort
 Source0:        %{name}.tar.gz
 
-Provides:       libquerysort.so.1
+Provides:       libquerysort.so.1 = %{version}-%{release}
 Requires:       uriparser >= 0.7.5
 BuildRequires:  uriparser-devel >= 0.7.5
 
@@ -23,7 +23,7 @@ uriparser under the New BSD license.
 %package devel
 Summary:        Header for %{name}
 Group:          System Environment/Libraries
-Requires:       %{name}
+Requires:       %{name} = %{version}-%{release}
 
 
 %description devel
@@ -69,12 +69,13 @@ rm -rf %{buildroot}
 %changelog
 * Sun Jun 03 2012 Dridi Boukelmoune <dridi.boukelmoune@gmail.com> - 1.0.0-1
 - Added shared object providing in the main package
+- Added strict version for devel dependencies
 - Uncommented project URL
 
 * Sat May 26 2012 Dridi Boukelmoune <dridi.boukelmoune@gmail.com> - 1.0.0-1
 - Added versionned shared objects
 - Moved unversionned shared object to the devel package
-- Moved %post and %postun from devel to the main package
+- Moved post and postun from devel to the main package
 
 * Wed May 23 2012 Dridi Boukelmoune <dridi.boukelmoune@gmail.com> - 1.0.0-1
 - Moved header in a sub-directory
