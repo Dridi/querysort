@@ -1,7 +1,8 @@
 Name:           querysort
 Version:        1.0.0
 Release:        1%{?dist}
-Summary:        RFC 1866 querystring sorting library
+Summary(en_US): RFC 1866 querystring sorting library
+Summary(fr_FR): Bibliothèque de tri de querystring de la RFC 1866
 
 License:        FreeBSD
 Group:          System Environment/Base
@@ -13,22 +14,35 @@ Requires:       uriparser >= 0.7.5
 BuildRequires:  uriparser-devel >= 0.7.5
 
 
-%description
-QuerySort is an RFC 1866 compliant URI querystring sorting library written
+%description -l en_US
+QuerySort is an RFC 1866 compliant URI query-string sorting library written
 in C. The QuerySort library comes with a command line program, which validates
 first URIs with uriparser. QuerySort is licensed under the FreeBSD license, and
 uriparser under the New BSD license.
 
 
+%description -l fr_FR
+QuerySort est une bibliothèque de tri de query-string conforme à la RFC 1866. La
+bibliothèque, écrite en C, s'accompagne d'un programme en ligne de commande qui
+valide en amont les URI à l'aide d'uriparser. QuerySort est distribué sous la
+licence FreeBSD, et uriparser sous la licence New BSD.
+
+
 %package devel
-Summary:        Header for %{name}
+Summary(en_US): Header for %{name}
+Summary(fr_FR): Header pour %{name}
 Group:          System Environment/Libraries
 Requires:       %{name} = %{version}-%{release}
 
 
-%description devel
-Header for QuerySort. QuerySort is an RFC 1866 compliant URI querystring sorting
+%description devel -l en_US
+Header for QuerySort. QuerySort is an RFC 1866 compliant URI query-string sorting
 library written in C.
+
+
+%description devel -l fr_FR
+Header pour QuerySort. QuerySort est une bibliothèque de tri de query-string
+conforme à la RFC 1866 et écrite en C.
 
 
 %clean
@@ -67,6 +81,9 @@ rm -rf %{buildroot}
 
 
 %changelog
+* Tue Jun 05 2012 Dridi Boukelmoune <dridi.boukelmoune@gmail.com> - 1.0.0-1
+- Added fr_FR summaries and descriptions
+
 * Sun Jun 03 2012 Dridi Boukelmoune <dridi.boukelmoune@gmail.com> - 1.0.0-1
 - Added shared object providing in the main package
 - Added strict version for devel dependencies

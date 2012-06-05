@@ -1,6 +1,5 @@
  - make deb
-
  - sort URI from stdin (support multiple URIs ?)
-
  - find the oldest version of uriparser required
+ - man pages
 
