@@ -1,0 +1,57 @@
+.
+.TH QUERYSORT 1
+.
+.SH NAME
+querysort \- RFC 1866 querystring sorting library
+.
+.SH SYNOPSIS
+.B querysort
+.I uri
+.
+.SH DESCRIPTION
+.PP
+Sort the fields of an URI's querystring in compliance with the RFC 1866. The RFC
+3986 defines the form of a URI, but not the form of a URI's query. What
+QuerySort sorts is the fields of an `application/x-www-form-urlencoded' query, a
+form, as defined in HTML 2.0 RFC 1866.
+.PP
+It is a common case that the fields order of a query string is not relevant.
+What usually matter is the key/value aspect of the query, and therefore the
+values of the keys. If you manipulate URLs, a query and its fields permutations
+might actually point to the same resource.
+.
+.SH EXAMPLES
+.
+.TP \w'querysort\ 'u
+.BI querysort \ 'http://localhost/?some=thing&an=other'
+Prints http://localhost/?an=other&some=thing in the standard output.
+.
+.TP
+.BI querysort \ http://localhost/?
+Prints http://localhost/? in the standard output (nothing to sort).
+.
+.TP
+.BI querysort \ 'http://localhost/?some=thing&an=other#fragment'
+Prints http://localhost/?an=other&some=thing#fragment in the standard output.
+.
+.SH AUTHOR
+Dridi Boukelmoune <dridi.boukelmoune@gmail.com>
+.
+.SH COPYRIGHT
+.PP
+Copyright \(co 2012 Dridi Boukelmoune. License FreeBSD: BSD 2-clause license
+.RB < http://www.freebsd.org/copyright/freebsd-license.html >.
+.br
+This is free software: you are free to change and redistribute it.
+There is NO WARRANTY, to the extent permitted by law.
+.
+.SH NOTES
+.PP
+The QuerySort command line interface uses
+.B liburiparser
+for URI validation. The
+.B uriparser
+project
+.RB < http://uriparser.sourceforge.net/ >
+is distributed under the New BSD license.
+
