@@ -32,7 +32,7 @@
 
 CC=gcc
 CFLAGS=-std=c99 -pedantic -fPIC
-LDFLAGS=-l querysort -l uriparser
+LDFLAGS=-l uriparser
 VERSION=0.0.0
 LIBVERSION=$(shell echo '$(VERSION)' | cut -d . -f 1)
 LIB=lib$(PROJECT).so

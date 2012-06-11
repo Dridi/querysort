@@ -30,27 +30,40 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include<stdlib.h>
-#include<string.h>
+#include<features.h>
+
+__BEGIN_DECLS
 
 /**
- * Creates a copy of the given URL with its querystring sorted. The URL is
- * assumed to be valid and without any fragment. If the URL doesn't have a
- * querystring, a simple copy is returned.
- * 
- * A returned non-NULL URL must be freed by the caller.
+ * Return values for querysort functions.
  */
-extern char *
-querysort(const char *url);
-
-struct query_param {
-  const char *value;
-  short length;
+enum {
+	QS_OK,
+	QS_ERROR
 };
 
-static void   sort_params(const char *url, const int position, char *sorted_url);
-static int   count_params(const char *url, const int position);
-static void search_params(const char *query_string, const int count, struct query_param params[]);
-static int compare_params(const void *a, const void *b);
-static void  apply_params(const struct query_param params[], const int count, char *sorted_url, int position);
+/**
+ * Create a copy of the given URI with its querystring sorted. The URI is
+ * assumed to be valid. If the URI doesn't have a querystring, a simple copy is
+ * returned.
+ * 
+ * A returned non-NULL URI must be freed by the caller.
+ * 
+ * @param uri the given URI to sort
+ */
+char *
+qs_sort_copy(const char *uri);
+
+/**
+ * Writes the given URI with its querystring sorted to the destination. The URI
+ * is assumed to be valid. If the URI doesn't have a querystring, a simple copy
+ * is made.
+ * 
+ * @param uri the given URI to sort
+ * @param sorted_uri the placeholder for the sorted URI
+ */
+int
+qs_sort(const char *uri, char *sorted_uri);
+
+__END_DECLS
 

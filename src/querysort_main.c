@@ -30,7 +30,10 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include<errno.h>
 #include<stdio.h>
+#include<stdlib.h>
+#include<string.h>
 #include<uriparser/Uri.h>
 
 #include "querysort.h"
@@ -56,16 +59,15 @@ main(const int argc, const char *argv[])
 
 	uriFreeUriMembersA(&uri);
 
-	char *url = querysort(argv[1]);
+	int uri_length = strlen(argv[1]);
+	char sorted_uri[uri_length + 1];
 
-	if (url) {
-		puts(url);
-		free(url);
-	}
-	else {
-		puts("Couldn't allocate the sorted URI");
+	if (qs_sort(argv[1], sorted_uri) != QS_OK) {
+		printf("An error occured (errno %d : %s)\n", errno, strerror(errno));
 		return EXIT_FAILURE;
 	}
+
+	puts(sorted_uri);
 
 	return EXIT_SUCCESS;
 }
