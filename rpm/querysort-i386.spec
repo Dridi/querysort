@@ -10,29 +10,45 @@ URL:            http://github.com/dridi/querysort
 Source0:        %{name}.tar.gz
 
 Provides:       libquerysort.so.1 = %{version}-%{release}
-Requires:       uriparser >= 0.7.5
+Requires:       %{name}-lib = %{version}-%{release}, uriparser >= 0.7.5
 BuildRequires:  uriparser-devel >= 0.7.5
 
 
 %description -l en_US
 QuerySort is an RFC 1866 compliant URI query-string sorting library written
-in C. The QuerySort library comes with a command line program, which validates
-first URIs with uriparser. QuerySort is licensed under the FreeBSD license, and
-uriparser under the New BSD license.
+in C. The QuerySort command line interface validates URIs with uriparser.
+QuerySort is licensed under the FreeBSD license, and uriparser under the New BSD
+license.
 
 
 %description -l fr_FR
-QuerySort est une bibliothèque de tri de query-string conforme à la RFC 1866. La
-bibliothèque, écrite en C, s'accompagne d'un programme en ligne de commande qui
-valide en amont les URI à l'aide d'uriparser. QuerySort est distribué sous la
-licence FreeBSD, et uriparser sous la licence New BSD.
+QuerySort est une bibliothèque de tri de query-string conforme à la RFC 1866,
+écrite en C. L'interface en ligne de commande s'appuie sur uriparser pour
+valider les URI à trier. QuerySort est distribué sous la licence FreeBSD, et
+uriparser sous la licence New BSD.
+
+
+%package lib
+Summary(en_US): Library for %{name}
+Summary(fr_FR): Bibliothèque pour %{name}
+Group:          System Environment/Libraries
+
+
+%description lib -l en_US
+Library for QuerySort. QuerySort is an RFC 1866 compliant URI query-string
+sorting library written in C.
+
+
+%description lib -l fr_FR
+Bibliothèque pour QuerySort. QuerySort est une bibliothèque de tri de
+query-string conforme à la RFC 1866 et écrite en C.
 
 
 %package devel
 Summary(en_US): Header for %{name}
 Summary(fr_FR): Header pour %{name}
 Group:          System Environment/Libraries
-Requires:       %{name} = %{version}-%{release}
+Requires:       %{name}-lib = %{version}-%{release}
 
 
 %description devel -l en_US
@@ -65,8 +81,11 @@ rm -rf %{buildroot}
 
 %files
 %{_bindir}/%{name}
-%{_libdir}/lib%{name}.so.*
 %doc LICENSE
+
+
+%files lib
+%{_libdir}/lib%{name}.so.*
 
 
 %files devel
