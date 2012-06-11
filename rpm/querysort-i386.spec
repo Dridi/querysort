@@ -100,6 +100,9 @@ rm -rf %{buildroot}
 
 
 %changelog
+* Mon Jun 11 2012 Dridi Boukelmoune <dridi.boukelmoune@gmail.com> - 1.0.0-1
+- Added a lib package for the shared object only
+
 * Tue Jun 05 2012 Dridi Boukelmoune <dridi.boukelmoune@gmail.com> - 1.0.0-1
 - Added fr_FR summaries and descriptions
 
