@@ -33,6 +33,6 @@
 all:
 
 install:
-	$(INSTALL) -D man1/querysort.1 $(DESTDIR)$(mandir)/man1/querysort.1
-	$(INSTALL) -D man3/querysort.3 $(DESTDIR)$(mandir)/man3/querysort.3
+	$(INSTALL) -D man1/$(PROJECT).1 $(DESTDIR)$(mandir)/man1/$(PROJECT).1
+	$(INSTALL) -D man3/$(PROJECT).3 $(DESTDIR)$(mandir)/man3/$(PROJECT).3
 

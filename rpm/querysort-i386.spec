@@ -76,7 +76,7 @@ rm -rf %{buildroot}
 
 %install
 rm -rf %{buildroot}
-%{__make} install DESTDIR=%{buildroot} VERSION=%{version}
+%{makeinstall} VERSION=%{version}
 
 
 %files
@@ -106,6 +106,7 @@ rm -rf %{buildroot}
 %changelog
 * Tue Jun 12 2012 Dridi Boukelmoune <dridi.boukelmoune@gmail.com> - 1.0.0-1
 - Added man pages files
+- Switched to the makeinstall macro in the install scriptlet
 
 * Mon Jun 11 2012 Dridi Boukelmoune <dridi.boukelmoune@gmail.com> - 1.0.0-1
 - Added a lib package for the shared object only
@@ -128,7 +129,7 @@ rm -rf %{buildroot}
 
 * Tue May 22 2012 Dridi Boukelmoune <dridi.boukelmoune@gmail.com> - 1.0.0-1
 - Added uriparser requirement
-- Added ldconfig execution in post and postun macros
+- Added ldconfig execution in post and postun scriptlets
 - Moved shared object from devel to the main package
 - Added packages descriptions
 - Added filenames instead of only generic directories
