@@ -30,42 +30,9 @@
 # OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-CC=gcc
-CFLAGS=-std=c99 -pedantic -fPIC
-LDFLAGS=-l uriparser
-VERSION=0.0.0
-LIBVERSION=$(shell echo '$(VERSION)' | cut -d . -f 1)
-LIB=lib$(PROJECT).so
-EXEC=$(PROJECT) $(LIB).$(VERSION)
-SRC=$(wildcard *.c)
-OBJ=$(SRC:.c=.o)
+all:
 
-
-all: build
-
-install: all
-	$(INSTALL_PROGRAM) -D $(PROJECT)        $(DESTDIR)$(bindir)/$(PROJECT)
-	$(INSTALL_DATA) -s -D $(LIB).$(VERSION) $(DESTDIR)$(libdir)/$(LIB).$(VERSION)
-	$(INSTALL_DATA)    -D $(PROJECT).h      $(DESTDIR)$(includedir)/$(PROJECT)/$(PROJECT).h
-	ln -s $(LIB).$(VERSION)    $(DESTDIR)$(libdir)/$(LIB).$(LIBVERSION)
-	ln -s $(LIB).$(LIBVERSION) $(DESTDIR)$(libdir)/$(LIB)
-
-build: $(EXEC)
-
-$(PROJECT): querysort_main.o $(LIB).$(VERSION)
-	$(CC) $(LDFLAGS) -o $@ $^
-
-$(LIB).$(VERSION): $(PROJECT).o
-	ld -shared -soname $(LIB).$(LIBVERSION) -o $@ $^ -lc
-
-%.o: %.c
-	$(CC) -o $@ -c $< $(CFLAGS)
-
-.PHONY: clean mrproper
-
-clean:
-	@rm -f $(OBJ)
-
-mrproper: clean
-	@rm -f $(EXEC)
+install:
+	$(INSTALL) -D man1/querysort.1 $(DESTDIR)$(mandir)/man1/querysort.1
+	$(INSTALL) -D man3/querysort.3 $(DESTDIR)$(mandir)/man3/querysort.3
 

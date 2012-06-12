@@ -37,29 +37,20 @@ export INSTALL_DATA=$(INSTALL) -m 644
 
 export bindir=/usr/bin
 export libdir=/usr/lib
+export mandir=/usr/share/man
 export includedir=/usr/include
 
 MAKE_SRC=$(MAKE) -C src $@
+MAKE_MAN=$(MAKE) -C man $@
 
 RPMBUILD=rpmbuild
 RPMFLAGS=
 
-CHECK_QUERYSTRING=a=1&a=2&b&b=3&c&d=4
+all: build
 
-all: build check
-
-install: all mkinstalldirs
+install: all
 	$(MAKE_SRC)
-
-mkinstalldirs:
-	mkdir -p $(DESTDIR)$(bindir)
-	mkdir -p $(DESTDIR)$(libdir)
-	mkdir -p $(DESTDIR)$(includedir)
-
-check: build
-#	RANDOM_QUERYSTRING="$(shell echo '$(CHECK_QUERYSTRING)'|tr '&' '\n'|sort -R|tr '\n' '&'|head -c19)"
-#	echo "check  : $(CHECK_QUERYSTRING)"
-#	echo "random : $${RANDOM_QUERYSTRING:-toto}"
+	$(MAKE_MAN)
 
 build:
 	$(MAKE_SRC)
