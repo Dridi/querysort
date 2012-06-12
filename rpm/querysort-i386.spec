@@ -81,16 +81,20 @@ rm -rf %{buildroot}
 
 %files
 %{_bindir}/%{name}
+%{_mandir}/man1/%{name}.1.gz
 %doc LICENSE
 
 
 %files lib
 %{_libdir}/lib%{name}.so.*
+%doc LICENSE
 
 
 %files devel
 %{_libdir}/lib%{name}.so
+%{_mandir}/man3/%{name}.3.gz
 %{_includedir}/%{name}/
+%doc LICENSE
 
 
 %post -p /sbin/ldconfig
@@ -100,6 +104,9 @@ rm -rf %{buildroot}
 
 
 %changelog
+* Tue Jun 12 2012 Dridi Boukelmoune <dridi.boukelmoune@gmail.com> - 1.0.0-1
+- Added man pages files
+
 * Mon Jun 11 2012 Dridi Boukelmoune <dridi.boukelmoune@gmail.com> - 1.0.0-1
 - Added a lib package for the shared object only
 
