@@ -40,6 +40,9 @@ export libdir=/usr/lib
 export mandir=/usr/share/man
 export includedir=/usr/include
 
+export VERSION=0.0.0
+export VERSION_MAJOR=$(firstword $(subst ., ,$(VERSION)))
+
 MAKE_SRC=$(MAKE) -C src $@
 MAKE_MAN=$(MAKE) -C man $@
 
@@ -56,7 +59,7 @@ build:
 	$(MAKE_SRC)
 
 rpm: dist
-	$(RPMBUILD) -bb rpm/$(PROJECT)-i386.spec $(RPMFLAGS) --define "_sourcedir $(shell pwd)"
+	$(RPMBUILD) -bb rpm/$(PROJECT)-i386.spec $(RPMFLAGS) --define "_sourcedir $(CURDIR)"
 
 dist: $(PROJECT).tar.gz
 
@@ -69,7 +72,7 @@ clean:
 	$(MAKE_SRC)
 
 cleandist:
-	@rm -f $(PROJECT).tar.gz
+	$(RM) $(PROJECT).tar.gz
 
 mrproper: clean cleandist
 	$(MAKE_SRC)

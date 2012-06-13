@@ -30,15 +30,11 @@
 # OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-CC=gcc
 CFLAGS=-std=c99 -pedantic -fPIC
-LDFLAGS=-l uriparser
-VERSION=0.0.0
-LIBVERSION=$(shell echo '$(VERSION)' | cut -d . -f 1)
+LDLIBS=-luriparser
 LIB=lib$(PROJECT).so
 EXEC=$(PROJECT) $(LIB).$(VERSION)
 SRC=$(wildcard *.c)
-OBJ=$(SRC:.c=.o)
 
 
 all: build
@@ -47,25 +43,25 @@ install: all
 	$(INSTALL_PROGRAM) -D $(PROJECT)        $(DESTDIR)$(bindir)/$(PROJECT)
 	$(INSTALL_DATA) -s -D $(LIB).$(VERSION) $(DESTDIR)$(libdir)/$(LIB).$(VERSION)
 	$(INSTALL_DATA)    -D $(PROJECT).h      $(DESTDIR)$(includedir)/$(PROJECT)/$(PROJECT).h
-	ln -s $(LIB).$(VERSION)    $(DESTDIR)$(libdir)/$(LIB).$(LIBVERSION)
-	ln -s $(LIB).$(LIBVERSION) $(DESTDIR)$(libdir)/$(LIB)
+	ln -s $(LIB).$(VERSION)       $(DESTDIR)$(libdir)/$(LIB).$(VERSION_MAJOR)
+	ln -s $(LIB).$(VERSION_MAJOR) $(DESTDIR)$(libdir)/$(LIB)
 
 build: $(EXEC)
 
 $(PROJECT): querysort_main.o $(LIB).$(VERSION)
-	$(CC) $(LDFLAGS) -o $@ $^
+	$(CC) $(LDLIBS) -o $@ $^
 
 $(LIB).$(VERSION): $(PROJECT).o
-	ld -shared -soname $(LIB).$(LIBVERSION) -o $@ $^ -lc
+	$(LD) -shared -soname $(LIB).$(VERSION_MAJOR) $(LDFLAGS) -o $@ $^
 
 %.o: %.c
-	$(CC) -o $@ -c $< $(CFLAGS)
+	$(COMPILE.c) $< -o $@
 
 .PHONY: clean mrproper
 
 clean:
-	@rm -f $(OBJ)
+	$(RM) $(SRC:.c=.o)
 
 mrproper: clean
-	@rm -f $(EXEC)
+	$(RM) $(EXEC)
 
