@@ -1,5 +1,10 @@
- - make deb
- - sort URI from stdin (support multiple URIs ?)
- - find the oldest version of uriparser required
- - man pages
+* 1.0
+- make deb
+- find the oldest version of uriparser required
+- version function
+
+* 1.1
+- sort URI from stdin (support multiple URIs ?)
+- shuffle query string
+- append sorted uri to a file
 
