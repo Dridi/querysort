@@ -39,11 +39,18 @@
 #include "querysort.h"
 
 int
+print_version();
+
+int
 main(const int argc, const char *argv[])
 {
 	if (argc != 2) {
 		fprintf(stderr, "Usage : %s URI\n", argv[0]);
 		return EXIT_FAILURE;
+	}
+	
+	if (strcmp(argv[1], "--version") == 0) {
+		return print_version();
 	}
 
 	UriParserStateA state;
@@ -69,6 +76,19 @@ main(const int argc, const char *argv[])
 
 	puts(sorted_uri);
 
+	return EXIT_SUCCESS;
+}
+
+int
+print_version()
+{
+	printf(
+		"QuerySort %s\n"
+		"Copyright (C) 2012 Dridi Boukelmoune\n"
+		"License FreeBSD: 2-clause BSD license <http://www.freebsd.org/copyright/freebsd-license.html>\n"
+		"This is free software: you are free to change and redistribute it.\n"
+		"There is NO WARRANTY, to the extent permitted by law.\n"
+	, qs_version());
 	return EXIT_SUCCESS;
 }
 

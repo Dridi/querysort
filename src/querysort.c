@@ -36,12 +36,16 @@
 
 #include "querysort.h"
 
+#ifndef QS_VERSION
+#  define QS_VERSION "dev"
+#endif
+
 // End Of QueryString
 #define EOQS(c) (c == '\0' || c == '#')
 
 struct query_param {
-  const char *value;
-  short length;
+	const char *value;
+	short length;
 };
 
 static void   sort_params(const char *url, const int position, char *sorted_url);
@@ -49,6 +53,12 @@ static int   count_params(const char *url, const int position);
 static void search_params(const char *query_string, const int count, struct query_param params[]);
 static int compare_params(const void *a, const void *b);
 static void  apply_params(const struct query_param params[], const int count, char *sorted_url, int position);
+
+extern char *
+qs_version()
+{
+	return QS_VERSION;
+}
 
 extern char *
 qs_sort_copy(const char *url)

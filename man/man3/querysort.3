@@ -34,15 +34,20 @@
 \fBquerysort\fR \- RFC 1866 querystring sorting library
 .
 .SH "SYNOPSIS"
-.nf 
+.nf
 \fB#include <querysort/querysort.h>\fR
-.PP 
+.PP
+\fBchar * qs_version();\fR
 \fBchar * qs_sort_copy(const char *uri);\fR
 \fBint qs_sort(const char *uri, char *sorted_uri);\fR
 .fi 
 .SH "DESCRIPTION"
 .
 This page summarizes the functions provided by the \fBquerysort\fP library.
+.
+.SS char * qs_version()
+.PP
+Returns the current version of the library.
 .
 .SS char * qs_sort_copy(const char *uri)
 .PP

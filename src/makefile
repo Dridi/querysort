@@ -30,7 +30,7 @@
 # OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-CFLAGS=-std=c99 -pedantic -fPIC
+CFLAGS=-std=c99 -pedantic -fPIC -D QS_VERSION=\"$(VERSION)\"
 LDLIBS=-luriparser
 LIB=lib$(PROJECT).so
 EXEC=$(PROJECT) $(LIB).$(VERSION)

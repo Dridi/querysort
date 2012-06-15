@@ -30,6 +30,9 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#ifndef _QUERYSORT_H
+#define _QUERYSORT_H	1
+
 #include<features.h>
 
 __BEGIN_DECLS
@@ -65,5 +68,13 @@ qs_sort_copy(const char *uri);
 int
 qs_sort(const char *uri, char *sorted_uri);
 
+/**
+ * Returns the current version of the library.
+ */
+char *
+qs_version();
+
 __END_DECLS
+
+#endif // _QUERYSORT_H
 
