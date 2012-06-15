@@ -42,7 +42,7 @@ int
 main(const int argc, const char *argv[])
 {
 	if (argc != 2) {
-		printf("Usage : %s URI\n", argv[0]);
+		fprintf(stderr, "Usage : %s URI\n", argv[0]);
 		return EXIT_FAILURE;
 	}
 
@@ -52,7 +52,7 @@ main(const int argc, const char *argv[])
 	state.uri = &uri;
 
 	if (uriParseUriA(&state, argv[1]) != URI_SUCCESS) {
-		printf("Invalid URI : <%s>\n", argv[1]);
+		fprintf(stderr, "Invalid URI : <%s>\n", argv[1]);
 		uriFreeUriMembersA(&uri);
 		return EXIT_FAILURE;
 	}
@@ -63,7 +63,7 @@ main(const int argc, const char *argv[])
 	char sorted_uri[uri_length + 1];
 
 	if (qs_sort(argv[1], sorted_uri) != QS_OK) {
-		printf("An error occured (errno %d : %s)\n", errno, strerror(errno));
+		fprintf(stderr, "An error occured (errno %d : %s)\n", errno, strerror(errno));
 		return EXIT_FAILURE;
 	}
 
