@@ -7,4 +7,5 @@
 - sort URI from stdin (support multiple URIs ?)
 - shuffle query string
 - append sorted uri to a file
+- unicode support
 
