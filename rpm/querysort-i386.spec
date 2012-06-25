@@ -10,8 +10,8 @@ URL:            http://github.com/dridi/querysort
 Source0:        %{name}.tar.gz
 
 Provides:       libquerysort.so.1 = %{version}-%{release}
-Requires:       %{name}-lib = %{version}-%{release}, uriparser >= 0.7.5
-BuildRequires:  uriparser-devel >= 0.7.5
+Requires:       %{name}-lib = %{version}-%{release}, uriparser
+BuildRequires:  uriparser-devel
 
 
 %description -l en_US
