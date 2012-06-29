@@ -31,9 +31,9 @@
 #
 
 export PROJECT=querysort
-export INSTALL=install
-export INSTALL_PROGRAM=$(INSTALL) -s
+export INSTALL=/usr/bin/install
 export INSTALL_DATA=$(INSTALL) -m 644
+export STRIP?=/usr/bin/strip
 
 export bindir=/usr/bin
 export libdir=/usr/lib

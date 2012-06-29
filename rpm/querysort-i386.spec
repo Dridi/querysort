@@ -9,8 +9,7 @@ Group:          System Environment/Base
 URL:            http://github.com/dridi/querysort
 Source0:        %{name}.tar.gz
 
-Provides:       libquerysort.so.1 = %{version}-%{release}
-Requires:       %{name}-lib = %{version}-%{release}, uriparser
+Requires:       uriparser
 BuildRequires:  uriparser-devel
 
 
@@ -49,6 +48,7 @@ Summary(en_US): Header for %{name}
 Summary(fr_FR): Header pour %{name}
 Group:          System Environment/Libraries
 Requires:       %{name}-lib = %{version}-%{release}
+Autoreq:        no
 
 
 %description devel -l en_US
@@ -91,6 +91,7 @@ rm -rf %{buildroot}
 
 
 %files devel
+%{_libdir}/lib%{name}_nonshared.a
 %{_libdir}/lib%{name}.so
 %{_mandir}/man3/%{name}.3.gz
 %{_includedir}/%{name}/

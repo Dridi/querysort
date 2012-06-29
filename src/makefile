@@ -32,27 +32,35 @@
 
 CFLAGS=-std=c99 -pedantic -fPIC -D QS_VERSION=\"$(VERSION)\"
 LDLIBS=-luriparser
-LIB=lib$(PROJECT).so
-EXEC=$(PROJECT) $(LIB).$(VERSION)
+PROJECT_A=lib$(PROJECT)_nonshared.a
+PROJECT_SO=lib$(PROJECT).so
+EXEC=$(PROJECT) $(PROJECT_SO).$(VERSION) $(PROJECT_A)
 SRC=$(wildcard *.c)
+OBJ=$(SRC:.c=.o)
 
 
 all: build
 
 install: all
-	$(INSTALL_PROGRAM) -D $(PROJECT)        $(DESTDIR)$(bindir)/$(PROJECT)
-	$(INSTALL_DATA) -s -D $(LIB).$(VERSION) $(DESTDIR)$(libdir)/$(LIB).$(VERSION)
-	$(INSTALL_DATA)    -D $(PROJECT).h      $(DESTDIR)$(includedir)/$(PROJECT)/$(PROJECT).h
-	ln -s $(LIB).$(VERSION)       $(DESTDIR)$(libdir)/$(LIB).$(VERSION_MAJOR)
-	ln -s $(LIB).$(VERSION_MAJOR) $(DESTDIR)$(libdir)/$(LIB)
+	$(INSTALL)      -D $(PROJECT)               $(DESTDIR)$(bindir)/$(PROJECT)
+	$(INSTALL_DATA) -D $(PROJECT_A)             $(DESTDIR)$(libdir)/$(PROJECT_A)
+	$(INSTALL_DATA) -D $(PROJECT_SO).$(VERSION) $(DESTDIR)$(libdir)/$(PROJECT_SO).$(VERSION)
+	$(INSTALL_DATA) -D $(PROJECT).h             $(DESTDIR)$(includedir)/$(PROJECT)/$(PROJECT).h
+	ln -s $(PROJECT_SO).$(VERSION)       $(DESTDIR)$(libdir)/$(PROJECT_SO).$(VERSION_MAJOR)
+	ln -s $(PROJECT_SO).$(VERSION_MAJOR) $(DESTDIR)$(libdir)/$(PROJECT_SO)
 
 build: $(EXEC)
 
-$(PROJECT): querysort_main.o $(LIB).$(VERSION)
+$(PROJECT): $(OBJ)
 	$(CC) $(LDLIBS) -o $@ $^
+	$(STRIP) -s $@
 
-$(LIB).$(VERSION): $(PROJECT).o
-	$(LD) -shared -soname $(LIB).$(VERSION_MAJOR) $(LDFLAGS) -o $@ $^
+$(PROJECT_SO).$(VERSION): $(PROJECT).o
+	$(LD) -shared -soname $(PROJECT_SO).$(VERSION_MAJOR) $(LDFLAGS) -o $@ $^
+	$(STRIP) -s $@
+
+$(PROJECT_A): $(PROJECT).o
+	$(AR) r $@ $<
 
 %.o: %.c
 	$(COMPILE.c) $< -o $@
@@ -60,7 +68,7 @@ $(LIB).$(VERSION): $(PROJECT).o
 .PHONY: clean mrproper
 
 clean:
-	$(RM) $(SRC:.c=.o)
+	$(RM) $(OBJ)
 
 mrproper: clean
 	$(RM) $(EXEC)
