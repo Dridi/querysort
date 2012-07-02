@@ -1,5 +1,9 @@
+%define version_major 1
+%define version_minor 0
+%define version_patch 0
+
 Name:           querysort
-Version:        1.0.0
+Version:        %{version_major}.%{version_minor}.%{version_patch}
 Release:        1%{?dist}
 Summary(en_US): RFC 1866 querystring sorting library
 Summary(fr_FR): Bibliothèque de tri de querystring de la RFC 1866
@@ -86,7 +90,8 @@ rm -rf %{buildroot}
 
 
 %files lib
-%{_libdir}/lib%{name}.so.*
+%{_libdir}/lib%{name}.so.%{version}
+%{_libdir}/lib%{name}.so.%{version_major}
 %doc LICENSE
 
 
