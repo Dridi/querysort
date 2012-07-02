@@ -110,6 +110,10 @@ rm -rf %{buildroot}
 
 
 %changelog
+* Mon Jul 02 2012 Dridi Boukelmoune <dridi.boukelmoune@gmail.com> - 1.0.0-1
+- Turned Autoreq off for the devel package
+- This spec now builds and installs correctly on x86_64 architecture
+
 * Tue Jun 12 2012 Dridi Boukelmoune <dridi.boukelmoune@gmail.com> - 1.0.0-1
 - Added man pages files
 - Switched to the makeinstall macro in the install scriptlet
