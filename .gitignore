@@ -1,7 +1,9 @@
 *~
 *.s
 *.o
-*.so*
+*.a
+*.so
+*.so.*
 *.tar.gz
 querysort
 

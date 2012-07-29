@@ -1,7 +1,7 @@
-* 1.0
+* 1.0.x
 - switch to autoconf
 
-* 1.1
+* 1.1.x
 - sort URI from stdin (support multiple URIs ?)
 - shuffle query string
 - append sorted uri to a file

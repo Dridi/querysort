@@ -66,7 +66,7 @@ conforme à la RFC 1866 et écrite en C.
 
 
 %clean
-rm -rf %{buildroot}
+%{__rm} -rf %{buildroot}
 %{__make} mrproper
 
 
@@ -79,7 +79,7 @@ rm -rf %{buildroot}
 
 
 %install
-rm -rf %{buildroot}
+%{__rm} -rf %{buildroot}
 %{makeinstall} VERSION=%{version}
 
 
@@ -110,6 +110,9 @@ rm -rf %{buildroot}
 
 
 %changelog
+* Sun Jul 29 2012 Dridi Boukelmoune <dridi.boukelmoune@gmail.com> - 1.0.0-1
+- Minor changes
+
 * Mon Jul 02 2012 Dridi Boukelmoune <dridi.boukelmoune@gmail.com> - 1.0.0-1
 - Turned Autoreq off for the devel package
 - This spec now builds and installs correctly on x86_64 architecture

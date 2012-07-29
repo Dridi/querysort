@@ -59,7 +59,7 @@ build:
 	$(MAKE_SRC)
 
 rpm: dist
-	$(RPMBUILD) -bb rpm/$(PROJECT)-i386.spec $(RPMFLAGS) --define "_sourcedir $(CURDIR)"
+	$(RPMBUILD) -ba rpm/$(PROJECT).spec $(RPMFLAGS) --define "_sourcedir $(CURDIR)"
 
 dist: $(PROJECT).tar.gz
 
