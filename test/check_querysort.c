@@ -13,6 +13,7 @@ struct test_case
 
 static struct test_case TEST_CASES[] =
 {
+    { NULL, QS_ERROR, NULL},
     { "http://localhost", QS_OK, "http://localhost"},
     { "http://localhost?a=1", QS_OK, "http://localhost?a=1"},
     { "http://localhost?a=1&b=2", QS_OK, "http://localhost?a=1&b=2"},
@@ -62,7 +63,11 @@ START_TEST(test_querysort)
 
     ret = qs_sort(t->src, actual_result);
     fail_if(ret != t->expected_ret);
-    fail_if(strcmp(actual_result, t->expected_result) != 0, "Source \"%s\" Expected \"%s\" Actual \"%s\"", t->src, t->expected_result, actual_result);
+    if (ret == QS_OK) {
+        fail_if(strcmp(actual_result, t->expected_result) != 0,
+                "Source \"%s\" Expected \"%s\" Actual \"%s\"",
+                t->src, t->expected_result, actual_result);
+    }
 }
 END_TEST
 
