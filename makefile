@@ -45,6 +45,7 @@ export VERSION_MAJOR=$(firstword $(subst ., ,$(VERSION)))
 
 MAKE_SRC=$(MAKE) -C src $@
 MAKE_MAN=$(MAKE) -C man $@
+MAKE_CHECK=$(MAKE) -C test $@
 
 RPMBUILD=rpmbuild
 RPMFLAGS=
@@ -57,6 +58,9 @@ install: all
 
 build:
 	$(MAKE_SRC)
+
+check:
+	$(MAKE_CHECK)
 
 rpm: dist
 	$(RPMBUILD) -ba rpm/$(PROJECT).spec $(RPMFLAGS) --define "_sourcedir $(CURDIR)"
