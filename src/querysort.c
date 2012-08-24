@@ -124,19 +124,22 @@ count_params(const char *url, const int position)
 static void
 search_params(const char *query_string, const int count, struct query_param params[])
 {
-	int i = 0, p = 0;
-	do {
-		params[p].value = &query_string[i];
-		params[p].length = 0;
-		
-		while (query_string[i] != '&' && ! EOQS(query_string[i])) {
-			params[p].length++;
-			i++;
-		}
-		
-		p++;
-		i += (query_string[i] == '&');
-	} while ( ! EOQS(query_string[i]) );
+   /* This function is responsible for tokenizing query_string.  It fills
+    * indexes [0...count) in the params array with value and length.
+    * This function requires that count >= 1. */
+    const char* value_start = query_string;
+    const char* ch;
+    int p = 0;
+    for (ch = query_string; !EOQS(*ch); ++ch) {
+        if (*ch == '&') {
+            params[p].value = value_start;
+            params[p].length = ch - value_start;
+            value_start = ch + 1;
+            ++p;
+        }
+    }
+    params[p].value = value_start;
+    params[p].length = ch - value_start;
 }
 
 static int
