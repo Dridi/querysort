@@ -74,6 +74,7 @@ dist: $(PROJECT).tar.gz
 
 clean:
 	$(MAKE_SRC)
+	$(MAKE_CHECK)
 
 cleandist:
 	$(RM) $(PROJECT).tar.gz

@@ -6,4 +6,5 @@
 *.so.*
 *.tar.gz
 querysort
+check_querysort
 
