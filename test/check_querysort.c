@@ -28,6 +28,8 @@ static struct test_case TEST_CASES_QS_SORT[] =
     { "http://localhost?#", QS_OK, "http://localhost?#" },
     { "http://localhost?#z=26&y=25", QS_OK, "http://localhost?#z=26&y=25" },
     { "http://localhost?a=1#z=26&y=25", QS_OK, "http://localhost?a=1#z=26&y=25"},
+    { "http://localhost?a=1&b=2#", QS_OK, "http://localhost?a=1&b=2#"},
+    { "http://localhost?b=2&a=1#", QS_OK, "http://localhost?a=1&b=2#"},
     { "http://localhost?a=1&b=2#z=26&y=25", QS_OK, "http://localhost?a=1&b=2#z=26&y=25"},
     { "http://localhost?b=2&a=1#z=26&y=25", QS_OK, "http://localhost?a=1&b=2#z=26&y=25"},
     
@@ -58,33 +60,30 @@ static struct test_case TEST_CASES_QS_SORT[] =
     /* empty query parameters */
     { "http://localhost?&", QS_OK, "http://localhost?&"},
     { "http://localhost?&&&&", QS_OK, "http://localhost?&&&&"},
-    { "http://localhost?a=1&", QS_OK, "http://localhost?&a=1"},
-    { "http://localhost?a=1&&&&&", QS_OK, "http://localhost?&&&&&a=1"},
-    { "http://localhost?a=1&b=2&", QS_OK, "http://localhost?&a=1&b=2"},
-    { "http://localhost?b=2&a=1&", QS_OK, "http://localhost?&a=1&b=2"},
-    { "http://localhost?a=1&b=2&&&&&", QS_OK, "http://localhost?&&&&&a=1&b=2"},
-    { "http://localhost?b=2&a=1&&&&&", QS_OK, "http://localhost?&&&&&a=1&b=2"},
+    { "http://localhost?a=1&", QS_OK, "http://localhost?a=1&"},
+    { "http://localhost?a=1&&&&&", QS_OK, "http://localhost?a=1&&&&&"},
+    { "http://localhost?a=1&b=2&", QS_OK, "http://localhost?a=1&b=2&"},
+    { "http://localhost?b=2&a=1&", QS_OK, "http://localhost?a=1&b=2&"},
+    { "http://localhost?a=1&b=2&&&&&", QS_OK, "http://localhost?a=1&b=2&&&&&"},
+    { "http://localhost?b=2&a=1&&&&&", QS_OK, "http://localhost?a=1&b=2&&&&&"},
     
     /* empty query parameters with fragments */
-    { "http://localhost?#z=26&y=25", QS_OK, "http://localhost?#z=26&y=25"},
     { "http://localhost?&#", QS_OK, "http://localhost?&#"},
     { "http://localhost?&#z=26&y=25", QS_OK, "http://localhost?&#z=26&y=25"},
     { "http://localhost?&&&&#", QS_OK, "http://localhost?&&&&#"},
     { "http://localhost?&&&&#z=26&y=25", QS_OK, "http://localhost?&&&&#z=26&y=25"},
-    { "http://localhost?a=1&#", QS_OK, "http://localhost?&a=1#"},
-    { "http://localhost?a=1&#z=26&y=25", QS_OK, "http://localhost?&a=1#z=26&y=25"},
-    { "http://localhost?a=1&&&&&#", QS_OK, "http://localhost?&&&&&a=1#"},
-    { "http://localhost?a=1&&&&&#z=26&y=25", QS_OK, "http://localhost?&&&&&a=1#z=26&y=25"},
-    { "http://localhost?a=1&b=2#", QS_OK, "http://localhost?a=1&b=2#"},
-    { "http://localhost?a=1&b=2#z=26&y=25", QS_OK, "http://localhost?a=1&b=2#z=26&y=25"},
+    { "http://localhost?a=1&#", QS_OK, "http://localhost?a=1&#"},
+    { "http://localhost?a=1&#z=26&y=25", QS_OK, "http://localhost?a=1&#z=26&y=25"},
+    { "http://localhost?a=1&&&&&#", QS_OK, "http://localhost?a=1&&&&&#"},
+    { "http://localhost?a=1&&&&&#z=26&y=25", QS_OK, "http://localhost?a=1&&&&&#z=26&y=25"},
     { "http://localhost?b=2&a=1#", QS_OK, "http://localhost?a=1&b=2#"},
     { "http://localhost?b=2&a=1#z=26&y=25", QS_OK, "http://localhost?a=1&b=2#z=26&y=25"},
-    { "http://localhost?a=1&b=2&#", QS_OK, "http://localhost?&a=1&b=2#"},
-    { "http://localhost?a=1&b=2&#z=26&y=25", QS_OK, "http://localhost?&a=1&b=2#z=26&y=25"},
-    { "http://localhost?b=2&a=1&#", QS_OK, "http://localhost?&a=1&b=2#"},
-    { "http://localhost?b=2&a=1&#z=26&y=25", QS_OK, "http://localhost?&a=1&b=2#z=26&y=25"},
-    { "http://localhost?a=1&b=2&&&&&#", QS_OK, "http://localhost?&&&&&a=1&b=2#"},
-    { "http://localhost?b=2&a=1&&&&&#", QS_OK, "http://localhost?&&&&&a=1&b=2#"},
+    { "http://localhost?a=1&b=2&#", QS_OK, "http://localhost?a=1&b=2&#"},
+    { "http://localhost?b=2&a=1&#", QS_OK, "http://localhost?a=1&b=2&#"},
+    { "http://localhost?a=1&b=2&#z=26&y=25", QS_OK, "http://localhost?a=1&b=2&#z=26&y=25"},
+    { "http://localhost?b=2&a=1&#z=26&y=25", QS_OK, "http://localhost?a=1&b=2&#z=26&y=25"},
+    { "http://localhost?a=1&b=2&&&&&#", QS_OK, "http://localhost?a=1&b=2&&&&&#"},
+    { "http://localhost?b=2&a=1&&&&&#", QS_OK, "http://localhost?a=1&b=2&&&&&#"},
 };
 
 START_TEST(test_qs_sort)
@@ -112,7 +111,6 @@ querysort_suite(void)
     suite_add_tcase(s, tc);
     return s;
 }
-
 
 int
 main(void)

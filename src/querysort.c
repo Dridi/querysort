@@ -148,6 +148,10 @@ compare_params(const void *a, const void *b)
 	const struct query_param *x = (const struct query_param *) a;
 	const struct query_param *y = (const struct query_param *) b;
 	
+	if (x->length == 0 || y->length == 0) {
+		return y->length - x->length;
+	}
+	
 	int min_length = (x->length < y->length) ? x->length : y->length;
 	int compare = strncmp(x->value, y->value, min_length);
 	return (compare == 0) ? x->length - y->length : compare;
