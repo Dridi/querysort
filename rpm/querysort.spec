@@ -1,6 +1,6 @@
 %define version_major 1
 %define version_minor 0
-%define version_patch 0
+%define version_patch 1
 
 Name:           querysort
 Version:        %{version_major}.%{version_minor}.%{version_patch}
@@ -14,7 +14,7 @@ URL:            http://github.com/dridi/querysort
 Source0:        %{name}.tar.gz
 
 Requires:       uriparser
-BuildRequires:  uriparser-devel
+BuildRequires:  uriparser-devel check-devel >= 0.9.5
 
 
 %description -l en_US
@@ -78,6 +78,10 @@ conforme à la RFC 1866 et écrite en C.
 %{__make} build VERSION=%{version} %{?_smp_mflags}
 
 
+%check
+%{__make} check
+
+
 %install
 %{__rm} -rf %{buildroot}
 %{makeinstall} VERSION=%{version}
@@ -110,6 +114,10 @@ conforme à la RFC 1866 et écrite en C.
 
 
 %changelog
+* Tue Aug 28 2012 Dridi Boukelmoune <dridi.boukelmoune@gmail.com> - 1.0.1-1
+- Added a brand new check section
+- Bumped version to 1.0.1
+
 * Sun Jul 29 2012 Dridi Boukelmoune <dridi.boukelmoune@gmail.com> - 1.0.0-1
 - Minor changes
 
