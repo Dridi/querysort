@@ -11,13 +11,18 @@ struct test_case
     const char* expected_result;
 };
 
-static struct test_case TEST_CASES[] =
+static struct test_case TEST_CASES_QS_SORT[] =
 {
+    /* basic cases */
     { NULL, QS_ERROR, NULL},
+    { "", QS_OK, ""},
     { "http://localhost", QS_OK, "http://localhost"},
+    { "http://localhost?", QS_OK, "http://localhost?"},
     { "http://localhost?a=1", QS_OK, "http://localhost?a=1"},
     { "http://localhost?a=1&b=2", QS_OK, "http://localhost?a=1&b=2"},
     { "http://localhost?b=2&a=1", QS_OK, "http://localhost?a=1&b=2"},
+    
+    /* basic cases with fragments */
     { "http://localhost#", QS_OK, "http://localhost#"},
     { "http://localhost#z=26&y=25", QS_OK, "http://localhost#z=26&y=25" },
     { "http://localhost?#", QS_OK, "http://localhost?#" },
@@ -25,7 +30,32 @@ static struct test_case TEST_CASES[] =
     { "http://localhost?a=1#z=26&y=25", QS_OK, "http://localhost?a=1#z=26&y=25"},
     { "http://localhost?a=1&b=2#z=26&y=25", QS_OK, "http://localhost?a=1&b=2#z=26&y=25"},
     { "http://localhost?b=2&a=1#z=26&y=25", QS_OK, "http://localhost?a=1&b=2#z=26&y=25"},
-    { "http://localhost?", QS_OK, "http://localhost?"},
+    
+    /* query param "collections" */
+    { "http://localhost?a=3&a=2&a=1", QS_OK, "http://localhost?a=1&a=2&a=3"},
+    { "http://localhost?a=3&a=1&a=2", QS_OK, "http://localhost?a=1&a=2&a=3"},
+    { "http://localhost?a=2&a=3&a=1", QS_OK, "http://localhost?a=1&a=2&a=3"},
+    { "http://localhost?a=2&a=1&a=3", QS_OK, "http://localhost?a=1&a=2&a=3"},
+    { "http://localhost?a=1&a=3&a=2", QS_OK, "http://localhost?a=1&a=2&a=3"},
+    { "http://localhost?a=1&a=2&a=3", QS_OK, "http://localhost?a=1&a=2&a=3"},
+    
+    /* query param "collections" with fragments */
+    { "http://localhost?a=3&a=2&a=1#", QS_OK, "http://localhost?a=1&a=2&a=3#"},
+    { "http://localhost?a=3&a=1&a=2#", QS_OK, "http://localhost?a=1&a=2&a=3#"},
+    { "http://localhost?a=2&a=3&a=1#", QS_OK, "http://localhost?a=1&a=2&a=3#"},
+    { "http://localhost?a=2&a=1&a=3#z=26&y=25", QS_OK, "http://localhost?a=1&a=2&a=3#z=26&y=25"},
+    { "http://localhost?a=1&a=3&a=2#z=26&y=25", QS_OK, "http://localhost?a=1&a=2&a=3#z=26&y=25"},
+    { "http://localhost?a=1&a=2&a=3#z=26&y=25", QS_OK, "http://localhost?a=1&a=2&a=3#z=26&y=25"},
+    
+    /* percent encoding */
+    { "http://localhost?a%5B%5D=2&a%5B%5D=1", QS_OK, "http://localhost?a%5B%5D=1&a%5B%5D=2"},
+    { "http://localhost?a%5B%5D=1&a%5B%5D=2", QS_OK, "http://localhost?a%5B%5D=1&a%5B%5D=2"},
+    
+    /* percent encoding with fragments */
+    { "http://localhost?a%5B%5D=2&a%5B%5D=1#z=26&y=25", QS_OK, "http://localhost?a%5B%5D=1&a%5B%5D=2#z=26&y=25"},
+    { "http://localhost?a%5B%5D=1&a%5B%5D=2#z=26&y=25", QS_OK, "http://localhost?a%5B%5D=1&a%5B%5D=2#z=26&y=25"},
+    
+    /* empty query parameters */
     { "http://localhost?&", QS_OK, "http://localhost?&"},
     { "http://localhost?&&&&", QS_OK, "http://localhost?&&&&"},
     { "http://localhost?a=1&", QS_OK, "http://localhost?&a=1"},
@@ -34,6 +64,8 @@ static struct test_case TEST_CASES[] =
     { "http://localhost?b=2&a=1&", QS_OK, "http://localhost?&a=1&b=2"},
     { "http://localhost?a=1&b=2&&&&&", QS_OK, "http://localhost?&&&&&a=1&b=2"},
     { "http://localhost?b=2&a=1&&&&&", QS_OK, "http://localhost?&&&&&a=1&b=2"},
+    
+    /* empty query parameters with fragments */
     { "http://localhost?#z=26&y=25", QS_OK, "http://localhost?#z=26&y=25"},
     { "http://localhost?&#", QS_OK, "http://localhost?&#"},
     { "http://localhost?&#z=26&y=25", QS_OK, "http://localhost?&#z=26&y=25"},
@@ -55,9 +87,9 @@ static struct test_case TEST_CASES[] =
     { "http://localhost?b=2&a=1&&&&&#", QS_OK, "http://localhost?&&&&&a=1&b=2#"},
 };
 
-START_TEST(test_querysort)
+START_TEST(test_qs_sort)
 {
-    struct test_case* t = &TEST_CASES[_i];
+    struct test_case* t = &TEST_CASES_QS_SORT[_i];
     char actual_result[1024];
     int ret;
 
@@ -75,8 +107,8 @@ Suite*
 querysort_suite(void)
 {
     Suite* s = suite_create("querysort");
-    TCase* tc = tcase_create ("tcase");
-    tcase_add_loop_test(tc, test_querysort, 0, ARRAYSIZE(TEST_CASES));
+    TCase* tc = tcase_create("tcase");
+    tcase_add_loop_test(tc, test_qs_sort, 0, ARRAYSIZE(TEST_CASES_QS_SORT));
     suite_add_tcase(s, tc);
     return s;
 }
@@ -93,3 +125,4 @@ main(void)
     srunner_free(sr);
     return (number_failed == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
 }
+
