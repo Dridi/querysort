@@ -1,6 +1,6 @@
 %define version_major 1
-%define version_minor 0
-%define version_patch 1
+%define version_minor 1
+%define version_patch 0
 
 Name:           querysort
 Version:        %{version_major}.%{version_minor}.%{version_patch}
@@ -114,6 +114,9 @@ conforme à la RFC 1866 et écrite en C.
 
 
 %changelog
+* Thu Aug 30 2012 Dridi Boukelmoune <dridi.boukelmoune@gmail.com> - 1.1.0-1
+- Bumped version to 1.1.0
+
 * Tue Aug 28 2012 Dridi Boukelmoune <dridi.boukelmoune@gmail.com> - 1.0.1-1
 - Added a brand new check section
 - Bumped version to 1.0.1
