@@ -48,11 +48,14 @@ struct query_param {
 	short length;
 };
 
-static void   sort_params(const char *url, const int position, char *sorted_url);
+static const char* search_query(const char *url);
+static int          search_eoqs(const char *url, int position);
+
+static int    sort_params(const char *url, const int position, char *sorted_url);
 static int   count_params(const char *url, const int position);
 static void search_params(const char *query_string, const int count, struct query_param params[]);
 static int compare_params(const void *a, const void *b);
-static void  apply_params(const struct query_param params[], const int count, char *sorted_url, int position);
+static int   apply_params(const struct query_param params[], const int count, char *sorted_url, int position);
 
 extern char *
 qs_version()
@@ -91,7 +94,7 @@ qs_sort(const char *url, char *sorted_url)
 	}
 
 	strcpy(sorted_url, url);
-	char *query_string = strchr(sorted_url, '?');
+	const char *query_string = search_query(sorted_url);
 
 	if(query_string != NULL && ! EOQS(query_string[1])) {
 		int position = &query_string[1] - sorted_url;
@@ -101,14 +104,74 @@ qs_sort(const char *url, char *sorted_url)
 	return QS_OK;
 }
 
-static void
+extern int
+qs_sort_clean(const char *url, char *sorted_url)
+{
+	if (url == NULL || sorted_url == NULL) {
+		errno = EFAULT;
+		return QS_ERROR;
+	}
+
+	const char *query_string = search_query(url);
+
+	if (query_string == NULL) {
+		strcpy(sorted_url, url);
+		return QS_OK;
+	}
+	
+	int position = &query_string[1] - url;
+	strncpy(sorted_url, url, position);
+
+	if(query_string != NULL && ! EOQS(query_string[1])) {
+		position = sort_params(url, position, sorted_url);
+		sorted_url[position] = '\0';
+	}
+	
+	int eoqs_position = search_eoqs(url, position);
+	
+	while (sorted_url[position - 1] == '&') {
+		sorted_url[position - 1] = '\0';
+		position--;
+	}
+	
+	if (url[eoqs_position] == '#') {
+		strcpy(&sorted_url[position], &url[eoqs_position]);
+	}
+
+	return QS_OK;
+}
+
+static const char*
+search_query(const char *url)
+{
+	while ( ! EOQS(*url) ) {
+		if (*url == '?') {
+			return url;
+		}
+		url++;
+	}
+	return NULL;
+}
+
+
+static int
+search_eoqs(const char *url, int position)
+{
+	while ( ! EOQS(url[position]) ) {
+		position++;
+	}
+	return position;
+}
+
+static int
 sort_params(const char *url, const int position, char *sorted_url)
 {
 	int count = count_params(url, position);
 	struct query_param params[count];
+
 	search_params(&url[position], count, params);
 	qsort(params, count, sizeof(struct query_param), compare_params);
-	apply_params(params, count, sorted_url, position);
+	return apply_params(params, count, sorted_url, position);
 }
 
 static int
@@ -157,16 +220,17 @@ compare_params(const void *a, const void *b)
 	return (compare == 0) ? x->length - y->length : compare;
 }
 
-static void
+static int
 apply_params(const struct query_param params[], const int count, char *sorted_url, int position)
 {
 	for (int p = 0; p < count; p++) {
-		memcpy(&sorted_url[position], params[p].value, params[p].length);
-		position += params[p].length;
-		
-		if ( ! EOQS(sorted_url[position]) ) {
+		if (p > 0) {
 			sorted_url[position++] = '&';
 		}
+		
+		memcpy(&sorted_url[position], params[p].value, params[p].length);
+		position += params[p].length;
 	}
+	return position;
 }
 

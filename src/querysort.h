@@ -69,6 +69,17 @@ int
 qs_sort(const char *uri, char *sorted_uri);
 
 /**
+ * Writes the given URI with its querystring sorted to the destination. The URI
+ * is assumed to be valid. If the URI doesn't have a querystring, a simple copy
+ * is made. This function discards empty parameters in the querystring, if any.
+ * 
+ * @param uri the given URI to sort
+ * @param sorted_uri the placeholder for the sorted URI
+ */
+int
+qs_sort_clean(const char *uri, char *sorted_uri);
+
+/**
  * Returns the current version of the library.
  */
 char *

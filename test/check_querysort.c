@@ -4,6 +4,12 @@
 
 #define ARRAYSIZE(x) (sizeof(x)/sizeof(x[0]))
 
+#define QS_ADD_COMMON_LOOP_TEST(tc, function) \
+    tcase_add_loop_test(tc, function, 0, ARRAYSIZE(TEST_CASES_COMMON));
+
+#define QS_ADD_OTHERS_LOOP_TEST(tc, function, array) \
+    tcase_add_loop_test(tc, function, ARRAYSIZE(TEST_CASES_COMMON), ARRAYSIZE(TEST_CASES_COMMON) + ARRAYSIZE(array));
+
 struct test_case
 {
     const char* src;
@@ -11,7 +17,7 @@ struct test_case
     const char* expected_result;
 };
 
-static struct test_case TEST_CASES_QS_SORT[] =
+static struct test_case TEST_CASES_COMMON[] =
 {
     /* basic cases */
     { NULL, QS_ERROR, NULL},
@@ -56,7 +62,10 @@ static struct test_case TEST_CASES_QS_SORT[] =
     /* percent encoding with fragments */
     { "http://localhost?a%5B%5D=2&a%5B%5D=1#z=26&y=25", QS_OK, "http://localhost?a%5B%5D=1&a%5B%5D=2#z=26&y=25"},
     { "http://localhost?a%5B%5D=1&a%5B%5D=2#z=26&y=25", QS_OK, "http://localhost?a%5B%5D=1&a%5B%5D=2#z=26&y=25"},
-    
+};
+
+static struct test_case TEST_CASES_QS_SORT[] =
+{
     /* empty query parameters */
     { "http://localhost?&", QS_OK, "http://localhost?&"},
     { "http://localhost?&&&&", QS_OK, "http://localhost?&&&&"},
@@ -86,13 +95,68 @@ static struct test_case TEST_CASES_QS_SORT[] =
     { "http://localhost?b=2&a=1&&&&&#", QS_OK, "http://localhost?a=1&b=2&&&&&#"},
 };
 
+static struct test_case TEST_CASES_QS_SORT_CLEAN[] =
+{
+    /* empty query parameters */
+    { "http://localhost?&", QS_OK, "http://localhost?"},
+    { "http://localhost?&&&&", QS_OK, "http://localhost?"},
+    { "http://localhost?a=1&", QS_OK, "http://localhost?a=1"},
+    { "http://localhost?a=1&&&&&", QS_OK, "http://localhost?a=1"},
+    { "http://localhost?a=1&b=2&", QS_OK, "http://localhost?a=1&b=2"},
+    { "http://localhost?b=2&a=1&", QS_OK, "http://localhost?a=1&b=2"},
+    { "http://localhost?a=1&b=2&&&&&", QS_OK, "http://localhost?a=1&b=2"},
+    { "http://localhost?b=2&a=1&&&&&", QS_OK, "http://localhost?a=1&b=2"},
+    
+    /* empty query parameters with fragments */
+    { "http://localhost?&#", QS_OK, "http://localhost?#"},
+    { "http://localhost?&#z=26&y=25", QS_OK, "http://localhost?#z=26&y=25"},
+    { "http://localhost?&&&&#", QS_OK, "http://localhost?#"},
+    { "http://localhost?&&&&#z=26&y=25", QS_OK, "http://localhost?#z=26&y=25"},
+    { "http://localhost?a=1&#", QS_OK, "http://localhost?a=1#"},
+    { "http://localhost?a=1&#z=26&y=25", QS_OK, "http://localhost?a=1#z=26&y=25"},
+    { "http://localhost?a=1&&&&&#", QS_OK, "http://localhost?a=1#"},
+    { "http://localhost?a=1&&&&&#z=26&y=25", QS_OK, "http://localhost?a=1#z=26&y=25"},
+    { "http://localhost?b=2&&a=1#", QS_OK, "http://localhost?a=1&b=2#"},
+    { "http://localhost?b=2&&a=1#z=26&y=25", QS_OK, "http://localhost?a=1&b=2#z=26&y=25"},
+    { "http://localhost?a=1&b=2&#", QS_OK, "http://localhost?a=1&b=2#"},
+    { "http://localhost?b=2&a=1&#", QS_OK, "http://localhost?a=1&b=2#"},
+    { "http://localhost?a=1&b=2&#z=26&y=25", QS_OK, "http://localhost?a=1&b=2#z=26&y=25"},
+    { "http://localhost?b=2&a=1&#z=26&y=25", QS_OK, "http://localhost?a=1&b=2#z=26&y=25"},
+    { "http://localhost?a=1&b=2&&&&&#", QS_OK, "http://localhost?a=1&b=2#"},
+    { "http://localhost?b=2&a=1&&&&&#", QS_OK, "http://localhost?a=1&b=2#"},
+};
+
 START_TEST(test_qs_sort)
 {
-    struct test_case* t = &TEST_CASES_QS_SORT[_i];
+    struct test_case* t;
     char actual_result[1024];
     int ret;
+    
+    t = (_i < ARRAYSIZE(TEST_CASES_COMMON))
+        ? &TEST_CASES_COMMON[_i]
+        : &TEST_CASES_QS_SORT[_i - ARRAYSIZE(TEST_CASES_COMMON)];
 
     ret = qs_sort(t->src, actual_result);
+    fail_if(ret != t->expected_ret);
+    if (ret == QS_OK) {
+        fail_if(strcmp(actual_result, t->expected_result) != 0,
+                "Source \"%s\" Expected \"%s\" Actual \"%s\"",
+                t->src, t->expected_result, actual_result);
+    }
+}
+END_TEST
+
+START_TEST(test_qs_sort_clean)
+{
+    struct test_case* t;
+    char actual_result[1024];
+    int ret;
+    
+    t = (_i < ARRAYSIZE(TEST_CASES_COMMON))
+        ? &TEST_CASES_COMMON[_i]
+        : &TEST_CASES_QS_SORT_CLEAN[_i - ARRAYSIZE(TEST_CASES_COMMON)];
+
+    ret = qs_sort_clean(t->src, actual_result);
     fail_if(ret != t->expected_ret);
     if (ret == QS_OK) {
         fail_if(strcmp(actual_result, t->expected_result) != 0,
@@ -106,8 +170,14 @@ Suite*
 querysort_suite(void)
 {
     Suite* s = suite_create("querysort");
-    TCase* tc = tcase_create("tcase");
-    tcase_add_loop_test(tc, test_qs_sort, 0, ARRAYSIZE(TEST_CASES_QS_SORT));
+    TCase* tc = tcase_create("core");
+    
+    QS_ADD_COMMON_LOOP_TEST(tc, test_qs_sort);
+    QS_ADD_OTHERS_LOOP_TEST(tc, test_qs_sort, TEST_CASES_QS_SORT);
+    
+    QS_ADD_COMMON_LOOP_TEST(tc, test_qs_sort_clean);
+    QS_ADD_OTHERS_LOOP_TEST(tc, test_qs_sort_clean, TEST_CASES_QS_SORT_CLEAN);
+    
     suite_add_tcase(s, tc);
     return s;
 }
