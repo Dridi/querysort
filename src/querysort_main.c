@@ -69,9 +69,13 @@ main(const int argc, const char *argv[])
 	int uri_length = strlen(argv[1]);
 	char sorted_uri[uri_length + 1];
 
-	if (qs_sort(argv[1], sorted_uri) != QS_OK) {
+	if (qs_sort_clean(argv[1], sorted_uri) != QS_OK) {
 		fprintf(stderr, "An error occured (errno %d : %s)\n", errno, strerror(errno));
 		return EXIT_FAILURE;
+	}
+
+	if (strlen(argv[1]) > strlen(sorted_uri)) {
+		fprintf(stderr, "Invalid URI was cleaned <%s>\n", argv[1]);
 	}
 
 	puts(sorted_uri);
