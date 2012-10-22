@@ -30,46 +30,20 @@
 # OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-CFLAGS=-std=c99 -pedantic -fPIC -D QS_VERSION=\"$(VERSION)\"
-LDLIBS=-luriparser
-PROJECT_A=lib$(PROJECT)_nonshared.a
-PROJECT_SO=lib$(PROJECT).so
-EXEC=$(PROJECT) $(PROJECT_SO).$(VERSION) $(PROJECT_A)
-SRC=$(wildcard *.c)
-OBJ=$(SRC:.c=.o)
+CFLAGS = --pedantic -Wall -std=c99 -O3 -DQS_VERSION=\"$(VERSION)\"
 
+lib_LIBRARIES = libquerysort_nonshared.a
+libquerysort_nonshared_a_SOURCES = querysort.c querysort.h
+libquerysort_nonshared_a_CFLAGS = $(AM_FLAGS)
 
-all: build
+lib_LTLIBRARIES = libquerysort.la
+libquerysort_la_SOURCES = querysort.c
+libquerysort_la_LDFLAGS = -version-info 0:0:0
 
-install: all
-	$(INSTALL)      -D $(PROJECT)               $(DESTDIR)$(bindir)/$(PROJECT)
-	$(INSTALL_DATA) -D $(PROJECT_A)             $(DESTDIR)$(libdir)/$(PROJECT_A)
-	$(INSTALL_DATA) -D $(PROJECT_SO).$(VERSION) $(DESTDIR)$(libdir)/$(PROJECT_SO).$(VERSION)
-	$(INSTALL_DATA) -D $(PROJECT).h             $(DESTDIR)$(includedir)/$(PROJECT)/$(PROJECT).h
-	ln -s $(PROJECT_SO).$(VERSION)       $(DESTDIR)$(libdir)/$(PROJECT_SO).$(VERSION_MAJOR)
-	ln -s $(PROJECT_SO).$(VERSION_MAJOR) $(DESTDIR)$(libdir)/$(PROJECT_SO)
+include_HEADERS = querysort.h
 
-build: $(EXEC)
-
-$(PROJECT): $(OBJ)
-	$(CC) $(LDLIBS) -o $@ $^
-	$(STRIP) -s $@
-
-$(PROJECT_SO).$(VERSION): $(PROJECT).o
-	$(LD) -shared -soname $(PROJECT_SO).$(VERSION_MAJOR) $(LDFLAGS) -o $@ $^
-	$(STRIP) -s $@
-
-$(PROJECT_A): $(PROJECT).o
-	$(AR) r $@ $<
-
-%.o: %.c
-	$(COMPILE.c) $< -o $@
-
-.PHONY: clean mrproper
-
-clean:
-	$(RM) $(OBJ)
-
-mrproper: clean
-	$(RM) $(EXEC)
+bin_PROGRAMS = querysort
+querysort_SOURCES = querysort_main.c
+querysort_LDFLAGS = -luriparser
+querysort_LDADD = libquerysort_nonshared.a
 

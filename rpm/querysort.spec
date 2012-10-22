@@ -1,9 +1,37 @@
-%define version_major 1
-%define version_minor 0
-%define version_patch 1
+#
+# querysort - RFC 1866 querystring sorting library
+#
+# Copyright (C) 2012, Dridi Boukelmoune <dridi.boukelmoune@gmail.com>
+# All rights reserved.
+#
+# Redistribution  and use in source and binary forms, with or without
+# modification,  are permitted provided that the following conditions
+# are met:
+#
+# 1. Redistributions   of  source   code   must   retain  the   above
+#    copyright  notice, this  list of  conditions  and the  following
+#    disclaimer.
+# 2. Redistributions   in  binary  form  must  reproduce  the   above
+#    copyright  notice, this  list of  conditions and  the  following
+#    disclaimer   in  the   documentation   and/or  other   materials
+#    provided with the distribution.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+# "AS  IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT  NOT
+# LIMITED  TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND  FITNESS
+# FOR  A  PARTICULAR  PURPOSE ARE DISCLAIMED. IN NO EVENT  SHALL  THE
+# COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+# INCIDENTAL,    SPECIAL,   EXEMPLARY,   OR   CONSEQUENTIAL   DAMAGES
+# (INCLUDING,  BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+# SERVICES;  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+# HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+# STRICT  LIABILITY,  OR  TORT (INCLUDING  NEGLIGENCE  OR  OTHERWISE)
+# ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
+# OF THE POSSIBILITY OF SUCH DAMAGE.
+#
 
 Name:           querysort
-Version:        %{version_major}.%{version_minor}.%{version_patch}
+Version:        1.0.1
 Release:        1%{?dist}
 Summary(en_US): RFC 1866 querystring sorting library
 Summary(fr_FR): Bibliothèque de tri de querystring de la RFC 1866
@@ -11,7 +39,7 @@ Summary(fr_FR): Bibliothèque de tri de querystring de la RFC 1866
 License:        FreeBSD
 Group:          System Environment/Base
 URL:            http://github.com/dridi/querysort
-Source0:        %{name}.tar.gz
+Source0:        %{name}-%{version}.tar.gz
 
 Requires:       uriparser
 BuildRequires:  uriparser-devel check-devel >= 0.9.5
@@ -67,15 +95,16 @@ conforme à la RFC 1866 et écrite en C.
 
 %clean
 %{__rm} -rf %{buildroot}
-%{__make} mrproper
+%{__make} clean
 
 
 %prep
-%setup -q -n %{name}
+%setup -q
+%configure
 
 
 %build
-%{__make} build VERSION=%{version} %{?_smp_mflags}
+%{__make} %{?_smp_mflags}
 
 
 %check
@@ -84,27 +113,28 @@ conforme à la RFC 1866 et écrite en C.
 
 %install
 %{__rm} -rf %{buildroot}
-%{makeinstall} VERSION=%{version}
+%{__make} DESTDIR=%{buildroot} install
+%{__rm} -f %{buildroot}/%{_libdir}/lib%{name}.a
+%{__rm} -f %{buildroot}/%{_libdir}/lib%{name}.la
 
 
 %files
 %{_bindir}/%{name}
 %{_mandir}/man1/%{name}.1.gz
-%doc LICENSE
+%doc LICENSE* CONTRIBUTORS CHANGELOG
 
 
 %files lib
-%{_libdir}/lib%{name}.so.%{version}
-%{_libdir}/lib%{name}.so.%{version_major}
-%doc LICENSE
+%{_libdir}/lib%{name}.so.*
+%doc LICENSE* CONTRIBUTORS CHANGELOG
 
 
 %files devel
 %{_libdir}/lib%{name}_nonshared.a
 %{_libdir}/lib%{name}.so
 %{_mandir}/man3/%{name}.3.gz
-%{_includedir}/%{name}/
-%doc LICENSE
+%{_includedir}/%{name}.h
+%doc LICENSE* CONTRIBUTORS CHANGELOG
 
 
 %post -p /sbin/ldconfig
@@ -114,6 +144,9 @@ conforme à la RFC 1866 et écrite en C.
 
 
 %changelog
+* Mon Oct 22 2012 Dridi Boukelmoune <dridi.boukelmoune@gmail.com> - 1.0.1-1
+- Adapted the spec for autotools
+
 * Tue Aug 28 2012 Dridi Boukelmoune <dridi.boukelmoune@gmail.com> - 1.0.1-1
 - Added a brand new check section
 - Bumped version to 1.0.1

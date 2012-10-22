@@ -1,0 +1,5 @@
+* 1.0.1 - Mon Oct 22 2012 - maintenance release
+- moved the build to autotools
+- lowered the weight of empty parameters
+- added unit tests (see issue #1)
+

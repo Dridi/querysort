@@ -1,12 +1,19 @@
 Installation Instructions
 =========================
 
-Make
-----
+Autotools
+---------
 
-QuerySort uses make. To build and install querysort,  simply run 'make' and then
-'make install'  as root.  On Linux,  you also  need to  run  'ldconfig'  as root
-afterwards in order to update the shared library cache.
+QuerySort uses the autotools suite. To build and install querysort, run the
+following commands:
+
+./autogen.sh
+./configure
+make
+sudo make install
+
+On Linux,  you also  need to  run  'ldconfig'  as root afterwards in order to
+update the shared library cache.
 
 The QuerySort command line  uses liburiparser for URI validation,  and uriparser
 development package is required at build time.
@@ -14,6 +21,17 @@ development package is required at build time.
 RPM
 ---
 
-QuerySort  can also be  built as  RPM packages,  simply run 'make rpm'  and then
-'rpm -i' or your favorite RPM-based package manager as root.
+QuerySort can instead be built as RPM packages, run the following commands:
+
+./autogen.sh
+./configure
+make rpm
+
+This will produce the following packages:
+* querysort, the command line utility
+* querysort-lib, a shared object
+* querysort-devel, resources for developers
+
+Use 'rpm -i' or your favorite RPM-based package manager as root for actual
+installation.
 
