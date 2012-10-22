@@ -30,9 +30,11 @@
 # OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-all:
+CFLAGS = --pedantic -Wall -std=c99 -O3
+LDFLAGS = -lcheck
 
-install:
-	$(INSTALL) -D man1/$(PROJECT).1 $(DESTDIR)$(mandir)/man1/$(PROJECT).1
-	$(INSTALL) -D man3/$(PROJECT).3 $(DESTDIR)$(mandir)/man3/$(PROJECT).3
+check_PROGRAMS = check_querysort
+check_querysort_SOURCES = check_querysort.c ../src/querysort.c
+
+TESTS = check_querysort
 

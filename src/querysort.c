@@ -126,6 +126,9 @@ qs_sort_clean(const char *url, char *sorted_url)
 		position = sort_params(url, position, sorted_url);
 		sorted_url[position] = '\0';
 	}
+	else {
+		sorted_url[position] = '\0';
+	}
 	
 	int eoqs_position = search_eoqs(url, position);
 	

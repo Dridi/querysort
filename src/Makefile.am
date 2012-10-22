@@ -30,55 +30,20 @@
 # OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-export PROJECT=querysort
-export INSTALL=/usr/bin/install
-export INSTALL_DATA=$(INSTALL) -m 644
-export STRIP?=/usr/bin/strip
+CFLAGS = --pedantic -Wall -std=c99 -O3 -DQS_VERSION=\"$(VERSION)\"
 
-export bindir=/usr/bin
-export libdir=/usr/lib
-export mandir=/usr/share/man
-export includedir=/usr/include
+lib_LIBRARIES = libquerysort_nonshared.a
+libquerysort_nonshared_a_SOURCES = querysort.c querysort.h
+libquerysort_nonshared_a_CFLAGS = $(AM_FLAGS)
 
-export VERSION=0.0.0
-export VERSION_MAJOR=$(firstword $(subst ., ,$(VERSION)))
+lib_LTLIBRARIES = libquerysort.la
+libquerysort_la_SOURCES = querysort.c
+libquerysort_la_LDFLAGS = -version-info 1:0:1
 
-MAKE_SRC=$(MAKE) -C src $@
-MAKE_MAN=$(MAKE) -C man $@
-MAKE_CHECK=$(MAKE) -C test $@
+include_HEADERS = querysort.h
 
-RPMBUILD=rpmbuild
-RPMFLAGS=
-
-all: build
-
-install: all
-	$(MAKE_SRC)
-	$(MAKE_MAN)
-
-build:
-	$(MAKE_SRC)
-
-check:
-	$(MAKE_CHECK)
-
-rpm: dist
-	$(RPMBUILD) -ba rpm/$(PROJECT).spec $(RPMFLAGS) --define "_sourcedir $(CURDIR)"
-
-dist: $(PROJECT).tar.gz
-
-%.tar.gz:
-	@git archive -o $@ --prefix=$*/ HEAD
-
-.PHONY: clean mrproper
-
-clean:
-	$(MAKE_SRC)
-	$(MAKE_CHECK)
-
-cleandist:
-	$(RM) $(PROJECT).tar.gz
-
-mrproper: clean cleandist
-	$(MAKE_SRC)
+bin_PROGRAMS = querysort
+querysort_SOURCES = querysort_main.c
+querysort_LDFLAGS = -luriparser
+querysort_LDADD = libquerysort_nonshared.a
 
