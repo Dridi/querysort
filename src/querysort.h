@@ -37,6 +37,9 @@
 
 __BEGIN_DECLS
 
+// End Of QueryString
+#define EOQS(c) (c == '\0' || c == '#')
+
 /**
  * Return values for querysort functions.
  */

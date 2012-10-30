@@ -40,9 +40,6 @@
 #  define QS_VERSION "dev"
 #endif
 
-// End Of QueryString
-#define EOQS(c) (c == '\0' || c == '#')
-
 struct query_param {
 	const char *value;
 	short length;
