@@ -30,29 +30,18 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include<errno.h>
-#include<stdlib.h>
-#include<string.h>
+#include <errno.h>
+#include <stdlib.h>
+#include <string.h>
 
+#include "private.h"
 #include "querysort.h"
 
 #ifndef QS_VERSION
 #  define QS_VERSION "dev"
 #endif
 
-struct query_param {
-	const char *value;
-	short length;
-};
-
-static const char* search_query(const char *url);
-static int          search_eoqs(const char *url, int position);
-
-static int    sort_params(const char *url, const int position, char *sorted_url);
-static int   count_params(const char *url, const int position);
-static void search_params(const char *query_string, const int count, struct query_param params[]);
-static int compare_params(const void *a, const void *b);
-static int   apply_params(const struct query_param params[], const int count, char *sorted_url, int position);
+/* extern functions */
 
 extern char *
 qs_version()
@@ -89,15 +78,17 @@ qs_sort(const char *url, char *sorted_url)
 		errno = EFAULT;
 		return QS_ERROR;
 	}
-
-	strcpy(sorted_url, url);
-	const char *query_string = search_query(sorted_url);
-
-	if(query_string != NULL && ! EOQS(query_string[1])) {
-		int position = &query_string[1] - sorted_url;
-		sort_params(url, position, sorted_url);
-	}
-
+	
+	struct query_sort qs;
+	
+	qs.url = url;
+	qs.clean = false;
+	qs.destination = sorted_url;
+	qs.copy = &copy_string;
+	qs.append = &append_string;
+	
+	sort_query(&qs);
+	
 	return QS_OK;
 }
 
@@ -108,101 +99,114 @@ qs_sort_clean(const char *url, char *sorted_url)
 		errno = EFAULT;
 		return QS_ERROR;
 	}
-
-	const char *query_string = search_query(url);
-
-	if (query_string == NULL) {
-		strcpy(sorted_url, url);
-		return QS_OK;
-	}
 	
-	int position = &query_string[1] - url;
-	strncpy(sorted_url, url, position);
-
-	if(query_string != NULL && ! EOQS(query_string[1])) {
-		position = sort_params(url, position, sorted_url);
-		sorted_url[position] = '\0';
-	}
-	else {
-		sorted_url[position] = '\0';
-	}
+	struct query_sort qs;
 	
-	int eoqs_position = search_eoqs(url, position);
+	qs.url = url;
+	qs.clean = true;
+	qs.destination = sorted_url;
+	qs.copy = &copy_string;
+	qs.append = &append_string;
 	
-	while (sorted_url[position - 1] == '&') {
-		sorted_url[position - 1] = '\0';
-		position--;
-	}
+	sort_query(&qs);
 	
-	if (url[eoqs_position] == '#') {
-		strcpy(&sorted_url[position], &url[eoqs_position]);
-	}
-
 	return QS_OK;
 }
 
-static const char*
-search_query(const char *url)
-{
-	while ( ! EOQS(*url) ) {
-		if (*url == '?') {
-			return url;
-		}
-		url++;
-	}
-	return NULL;
-}
+/* static functions */
 
-
-static int
-search_eoqs(const char *url, int position)
-{
-	while ( ! EOQS(url[position]) ) {
-		position++;
-	}
-	return position;
-}
-
-static int
-sort_params(const char *url, const int position, char *sorted_url)
-{
-	int count = count_params(url, position);
-	struct query_param params[count];
-
-	search_params(&url[position], count, params);
-	qsort(params, count, sizeof(struct query_param), compare_params);
-	return apply_params(params, count, sorted_url, position);
-}
-
-static int
-count_params(const char *url, const int position)
-{
-	int count = 1;
-	for (int i = position; ! EOQS(url[i]); i++) {
-		count += (url[i] == '&');
-	}
-	return count;
+static void
+copy_string(struct query_sort *qs, const char *source, size_t length) {
+	char *destination = (char*) qs->destination;
+	strncpy(destination, source, length);
+	qs->destination = &destination[length];
 }
 
 static void
-search_params(const char *query_string, const int count, struct query_param params[])
+append_string(struct query_sort *qs, const char *source) {
+	char *destination = (char*) qs->destination;
+	strcpy(destination, source);
+	qs->destination = &destination[ strlen(source) ];
+}
+
+
+static void
+sort_query(struct query_sort *qs)
 {
-   /* This function is responsible for tokenizing query_string.  It fills
-    * indexes [0...count) in the params array with value and length.
-    * This function requires that count >= 1. */
-    const char* value_start = query_string;
-    const char* ch;
-    int p = 0;
-    for (ch = query_string; !EOQS(*ch); ++ch) {
-        if (*ch == '&') {
-            params[p].value = value_start;
-            params[p].length = ch - value_start;
-            value_start = ch + 1;
-            ++p;
-        }
-    }
-    params[p].value = value_start;
-    params[p].length = ch - value_start;
+	search_query(qs);
+
+	if (qs->query_string == NULL) {
+		qs->append(qs, qs->url);
+		return;
+	}
+	
+	qs->copy(qs, qs->url, qs->query_string - qs->url);
+
+	if( EOQS(qs->query_string[0]) ) {
+		// no params, append the end of the url
+		qs->append(qs, qs->query_string);
+	}
+	else {
+		/* count query parameters... */
+		count_params(qs);
+		
+		/* ...in order to allocate an array on the stack */
+		struct query_param params[qs->count];
+		qs->params = params;
+		
+		/* search and sort the parameters */
+		const char *eoqs = search_params(qs);
+		qsort(params, qs->count, sizeof(struct query_param), compare_params);
+		
+		/* append the sorted parameters and the end of the url */
+		append_params(qs);
+		qs->append(qs, eoqs);
+	}
+}
+
+static void
+search_query(struct query_sort *qs)
+{
+	const char *url = qs->url;
+	while ( ! EOQS(*url) ) {
+		if (*url == '?') {
+			qs->query_string = url + 1;
+			return;
+		}
+		url++;
+	}
+	qs->query_string = NULL;
+}
+
+static void
+count_params(struct query_sort *qs)
+{
+	qs->count = 1;
+	for (const char *c = qs->query_string; ! EOQS(*c); c++) {
+		qs->count += (*c == '&');
+	}
+}
+
+static const char*
+search_params(struct query_sort *qs)
+{
+	/* This function is responsible for tokenizing query_string. It fills
+	 * indexes [0...count) in the params array with value and length.
+	 * This function requires that count >= 1. */
+	const char *value_start = qs->query_string;
+	const char *c;
+	int p = 0;
+	for (c = value_start; ! EOQS(*c); c++) {
+		if (*c == '&') {
+			qs->params[p].value = value_start;
+			qs->params[p].length = c - value_start;
+			value_start = c + 1;
+			p++;
+		}
+	}
+	qs->params[p].value = value_start;
+	qs->params[p].length = c - value_start;
+	return c;
 }
 
 static int
@@ -220,17 +224,19 @@ compare_params(const void *a, const void *b)
 	return (compare == 0) ? x->length - y->length : compare;
 }
 
-static int
-apply_params(const struct query_param params[], const int count, char *sorted_url, int position)
+static void
+append_params(struct query_sort *qs)
 {
-	for (int p = 0; p < count; p++) {
-		if (p > 0) {
-			sorted_url[position++] = '&';
+	bool add_separator = false;
+	for (int p = 0; p < qs->count; p++) {
+		if (qs->clean && qs->params[p].length == 0) {
+			continue;
 		}
-		
-		memcpy(&sorted_url[position], params[p].value, params[p].length);
-		position += params[p].length;
+		if (add_separator) {
+			qs->append(qs, "&");
+		}
+		qs->copy(qs, qs->params[p].value, qs->params[p].length);
+		add_separator = true;
 	}
-	return position;
 }
 

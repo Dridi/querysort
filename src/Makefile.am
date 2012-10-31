@@ -30,6 +30,8 @@
 # OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
+EXTRA_DIST = private.h
+
 CFLAGS = --pedantic -Wall -std=c99 -O3 -DQS_VERSION=\"$(VERSION)\"
 
 lib_LIBRARIES = libquerysort_nonshared.a

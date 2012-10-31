@@ -30,69 +30,33 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <errno.h>
-#include <stdlib.h>
-#include <string.h>
-#include <getopt.h>
-#include <uriparser/Uri.h>
+#include <stdio.h>
+#include <stdbool.h>
 
-#include "querysort.h"
+struct query_param {
+	const char *value;
+	short length;
+};
 
-int
-print_version();
+struct query_sort {
+	const char *url;
+	const char *query_string;
+	bool clean;
+	void *destination;
+	int count;
+	struct query_param *params;
+	void (*copy)   (struct query_sort*, const char*, size_t);
+	void (*append) (struct query_sort*, const char*);
+};
 
-int
-main(const int argc, const char *argv[])
-{
-	if (argc != 2) {
-		fprintf(stderr, "Usage : %s URI\n", argv[0]);
-		return EXIT_FAILURE;
-	}
-	
-	if (strcmp(argv[1], "--version") == 0) {
-		return print_version();
-	}
+static void   copy_string(struct query_sort*, const char*, size_t);
+static void append_string(struct query_sort*, const char*);
 
-	UriParserStateA state;
-	UriUriA uri;
-	
-	state.uri = &uri;
+static       void   search_query(struct query_sort*);
+static       void     sort_query(struct query_sort*);
+static       void   count_params(struct query_sort*);
+static const char* search_params(struct query_sort*);
+static       void  append_params(struct query_sort*);
 
-	if (uriParseUriA(&state, argv[1]) != URI_SUCCESS) {
-		fprintf(stderr, "Invalid URI : <%s>\n", argv[1]);
-		uriFreeUriMembersA(&uri);
-		return EXIT_FAILURE;
-	}
-
-	uriFreeUriMembersA(&uri);
-	
-	int uri_length = strlen(argv[1]);
-	char sorted_uri[uri_length + 1];
-
-	if (qs_sort_clean(argv[1], sorted_uri) != QS_OK) {
-		fprintf(stderr, "An error occured (errno %d : %s)\n", errno, strerror(errno));
-		return EXIT_FAILURE;
-	}
-
-	if (strlen(argv[1]) > strlen(sorted_uri)) {
-		fprintf(stderr, "Invalid URI was cleaned <%s>\n", argv[1]);
-	}
-	
-	puts(sorted_uri);
-	
-	return EXIT_SUCCESS;
-}
-
-int
-print_version()
-{
-	printf(
-		"QuerySort %s\n"
-		"Copyright (C) 2012 Dridi Boukelmoune\n"
-		"License FreeBSD: 2-clause BSD license <http://www.freebsd.org/copyright/freebsd-license.html>\n"
-		"This is free software: you are free to change and redistribute it.\n"
-		"There is NO WARRANTY, to the extent permitted by law.\n"
-	, qs_version());
-	return EXIT_SUCCESS;
-}
+static int compare_params(const void*, const void*);
 

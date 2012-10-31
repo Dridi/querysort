@@ -33,7 +33,8 @@
 #ifndef _QUERYSORT_H
 #define _QUERYSORT_H	1
 
-#include<features.h>
+#include <stdio.h>
+#include <features.h>
 
 __BEGIN_DECLS
 
