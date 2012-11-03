@@ -49,8 +49,14 @@ struct query_sort {
 	void (*append) (struct query_sort*, const char*);
 };
 
+static int  sort(const char*, char*, bool);
+static int fsort(const char*, FILE*, bool);
+
 static void   copy_string(struct query_sort*, const char*, size_t);
 static void append_string(struct query_sort*, const char*);
+
+static void   fcopy_string(struct query_sort*, const char*, size_t);
+static void fappend_string(struct query_sort*, const char*);
 
 static       void   search_query(struct query_sort*);
 static       void     sort_query(struct query_sort*);

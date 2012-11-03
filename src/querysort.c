@@ -41,7 +41,7 @@
 #  define QS_VERSION "dev"
 #endif
 
-/* extern functions */
+/* public functions */
 
 extern char *
 qs_version()
@@ -74,26 +74,29 @@ qs_sort_copy(const char *url)
 extern int
 qs_sort(const char *url, char *sorted_url)
 {
-	if (url == NULL || sorted_url == NULL) {
-		errno = EFAULT;
-		return QS_ERROR;
-	}
-	
-	struct query_sort qs;
-	
-	qs.url = url;
-	qs.clean = false;
-	qs.destination = sorted_url;
-	qs.copy = &copy_string;
-	qs.append = &append_string;
-	
-	sort_query(&qs);
-	
-	return QS_OK;
+	return sort(url, sorted_url, false);
 }
 
 extern int
 qs_sort_clean(const char *url, char *sorted_url)
+{
+	return sort(url, sorted_url, true);
+}
+
+extern int
+qs_fsort(const char *url, FILE *stream) {
+	return fsort(url, stream, false);
+}
+
+extern int
+qs_fsort_clean(const char *url, FILE *stream) {
+	return fsort(url, stream, true);
+}
+
+/* private functions : helpers */
+
+static int
+sort(const char *url, char *sorted_url, bool clean)
 {
 	if (url == NULL || sorted_url == NULL) {
 		errno = EFAULT;
@@ -103,7 +106,7 @@ qs_sort_clean(const char *url, char *sorted_url)
 	struct query_sort qs;
 	
 	qs.url = url;
-	qs.clean = true;
+	qs.clean = clean;
 	qs.destination = sorted_url;
 	qs.copy = &copy_string;
 	qs.append = &append_string;
@@ -113,7 +116,32 @@ qs_sort_clean(const char *url, char *sorted_url)
 	return QS_OK;
 }
 
-/* static functions */
+static int
+fsort(const char *url, FILE *stream, bool clean) {
+	if (url == NULL || stream == NULL) {
+		errno = EFAULT;
+		return QS_ERROR;
+	}
+
+	struct query_sort qs;
+
+	qs.url = url;
+	qs.clean = clean;
+	qs.destination = stream;
+	qs.copy = &fcopy_string;
+	qs.append = &fappend_string;
+
+	clearerr(stream);
+	sort_query(&qs);
+
+	if ( ferror(stream) ) {
+		return QS_ERROR;
+	}
+
+	return QS_OK;
+}
+
+/* private functions : write output */
 
 static void
 copy_string(struct query_sort *qs, const char *source, size_t length) {
@@ -129,6 +157,19 @@ append_string(struct query_sort *qs, const char *source) {
 	qs->destination = &destination[ strlen(source) ];
 }
 
+static void
+fcopy_string(struct query_sort *qs, const char *source, size_t length) {
+	FILE *destination = (FILE*) qs->destination;
+	fwrite(source, length, sizeof(char), destination);
+}
+
+static void
+fappend_string(struct query_sort *qs, const char *source) {
+	FILE *destination = (FILE*) qs->destination;
+	fputs(source, destination);
+}
+
+/* private functions : query sort algorithm */
 
 static void
 sort_query(struct query_sort *qs)
@@ -214,11 +255,11 @@ compare_params(const void *a, const void *b)
 {
 	const struct query_param *x = (const struct query_param *) a;
 	const struct query_param *y = (const struct query_param *) b;
-	
+
 	if (x->length == 0 || y->length == 0) {
 		return y->length - x->length;
 	}
-	
+
 	int min_length = (x->length < y->length) ? x->length : y->length;
 	int compare = strncmp(x->value, y->value, min_length);
 	return (compare == 0) ? x->length - y->length : compare;

@@ -83,6 +83,12 @@ qs_sort(const char *uri, char *sorted_uri);
 int
 qs_sort_clean(const char *uri, char *sorted_uri);
 
+int
+qs_fsort(const char *uri, FILE *stream);
+
+int
+qs_fsort_clean(const char *uri, FILE *stream);
+
 /**
  * Returns the current version of the library.
  */
