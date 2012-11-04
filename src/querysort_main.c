@@ -30,60 +30,232 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include <config.h>
+
 #include <errno.h>
+#include <error.h>
+#include <fcntl.h>
 #include <stdlib.h>
+#include <stdbool.h>
 #include <string.h>
 #include <getopt.h>
 #include <uriparser/Uri.h>
 
 #include "querysort.h"
 
-int
-print_version();
+static int  sort_file();
+static void sort_stream(FILE*);
+static int  sort_string(const char*);
+static void get_options(int, char**);
+static void print_help();
+static void print_version();
+
+static int  verbose_flag = 0;
+static int  no_clean_flag = 0;
+static char delimiter = '\n';
+
+static const char* command;
+static const char* input_file = NULL;
+
+static struct option long_options[] = {
+	{"delimiter", required_argument, NULL, 'd'},
+	{"file",      required_argument, NULL, 'f'},
+	{"no-clean",  no_argument,       NULL, 'n'},
+	{"verbose",   no_argument,       NULL, 'v'},
+	{0, 0, 0, 0}
+};
 
 int
-main(const int argc, const char *argv[])
+main(int argc, char **argv)
 {
-	if (argc != 2) {
-		fprintf(stderr, "Usage : %s URI\n", argv[0]);
+	command = argv[0];
+	get_options(argc, argv);
+	
+	if (input_file == NULL) {
+		return sort_string(argv[optind]);
+	}
+
+	return sort_file();
+}
+
+static int
+sort_file()
+{
+	FILE *stream = (strcmp(input_file, "-") == 0)
+		? stdin
+		: fopen(input_file, "r");
+
+	if (stream == NULL) {
+		error(0, errno, "%s", input_file);
+		return EXIT_FAILURE;
+	}
+
+#if HAVE_POSIX_FADVISE
+	posix_fadvise(fileno(stream), 0, 0, POSIX_FADV_SEQUENTIAL);
+#endif
+
+	sort_stream(stream);
+
+	if (ferror(stream)) {
+		error(0, errno, "%s", input_file);
 		return EXIT_FAILURE;
 	}
 	
-	if (strcmp(argv[1], "--version") == 0) {
-		return print_version();
+	if (strcmp(input_file, "-") == 0) {
+		clearerr(stream);
 	}
 
+	if (fclose(stream) == EOF) {
+		error(0, errno, "%s", input_file);
+		return EXIT_FAILURE;
+	}
+
+	return EXIT_SUCCESS;
+}
+
+static void
+sort_stream(FILE *stream)
+{
+	char *string = NULL;
+	size_t length = 0;
+
+	while ( ! feof(stream) ) {
+		ssize_t read_length = getdelim(&string, &length, delimiter, stream);
+		if (read_length <= 0) {
+			continue;
+		}
+		ssize_t length_without_delimiter = read_length - 1;
+		if (strnlen(string, read_length) < length_without_delimiter) {
+			error(0, 0, "invalid uri <%s...>", string);
+			continue;
+		}
+		string[read_length - 1] = '\0';
+		sort_string(string);
+	}
+}
+
+static int
+sort_string(const char *string) {
 	UriParserStateA state;
 	UriUriA uri;
-	
+
 	state.uri = &uri;
 
-	if (uriParseUriA(&state, argv[1]) != URI_SUCCESS) {
-		fprintf(stderr, "Invalid URI : <%s>\n", argv[1]);
+	if (uriParseUriA(&state, string) != URI_SUCCESS) {
 		uriFreeUriMembersA(&uri);
+		error(0, 0, "invalid uri <%s>", string);
 		return EXIT_FAILURE;
 	}
 
 	uriFreeUriMembersA(&uri);
-	
-	int uri_length = strlen(argv[1]);
-	char sorted_uri[uri_length + 1];
 
-	if (qs_sort_clean(argv[1], sorted_uri) != QS_OK) {
-		fprintf(stderr, "An error occured (errno %d : %s)\n", errno, strerror(errno));
-		return EXIT_FAILURE;
+	int return_code = no_clean_flag
+		? qs_fsort(string, stdout)
+		: qs_fsort_clean(string, stdout);
+
+	switch (return_code) {
+		case QS_OK:
+			putchar('\n');
+			break;
+		case QS_ERROR:
+			error(0, errno, "an error occured");
+			return EXIT_FAILURE;
 	}
 
-	if (strlen(argv[1]) > strlen(sorted_uri)) {
-		fprintf(stderr, "Invalid URI was cleaned <%s>\n", argv[1]);
-	}
-	
-	puts(sorted_uri);
-	
 	return EXIT_SUCCESS;
 }
 
-int
+static void
+get_options(int argc, char **argv)
+{
+	if (argc == 2 && strcmp(argv[1], "--version") == 0) {
+		print_version();
+		exit(EXIT_SUCCESS);
+	}
+
+	if (argc == 2 && strcmp(argv[1], "--help") == 0) {
+		print_help(command);
+		exit(EXIT_SUCCESS);
+	}
+
+	int c;
+	bool delimiter_option = false;
+	while ((c = getopt_long(argc, argv, "d:f:nv", long_options, NULL)) != -1) {
+		switch (c) {
+			case  0:
+				break;
+
+			case 'd':
+				if(optarg[0] != '\0' && optarg[1] != '\0') {
+					error(EXIT_FAILURE, 0, "the delimiter must be a single character");
+				}
+				delimiter_option = true;
+				delimiter = optarg[0];
+				break;
+
+			case 'f':
+				input_file = optarg;
+				break;
+
+			case 'n':
+				no_clean_flag = 1;
+				break;
+
+			case 'v':
+				verbose_flag = 1;
+				break;
+
+			case '?':
+				break;
+
+			default:
+				abort();
+		}
+	}
+
+	int non_option_argc = argc - optind;
+
+	if (non_option_argc > 1 || (non_option_argc == 1 && input_file != NULL)) {
+		print_help();
+		abort();
+	}
+
+	if (non_option_argc == 0  && input_file == NULL) {
+		input_file = "-";
+	}
+
+	if (delimiter_option && input_file == NULL) {
+		error(EXIT_FAILURE, 0, "a delimiter can only be used with a file");
+	}
+}
+
+static void
+print_help()
+{
+	fprintf(stderr,
+	        "Usage : %s [-nv] URI\n"
+	        "        %s [-dnv] [-f FILE]\n",
+	        command, command
+	);
+
+	puts(
+		"Print URIs with their query-strings sorted.\n"
+		"\n"
+		"Mandatory arguments to long options are mandatory for short options too.\n"
+		"  -d, --delimiter=DELIM   use DELIM instead of EOL for field delimiter\n"
+		"  -f, --file=FILE         read URIs from FILE\n"
+		"  -n, --no-clean          do not clean the URIs (remove empty parameters)\n"
+		"  -v, --verbose           provide more detailed information\n"
+		"\n"
+		"      --help     display this help and exit\n"
+		"      --version  output version information and exit\n"
+		"\n"
+		"You can use a delimiter only when reading URIs from a file.\n"
+		"With no URI, or when FILE is -, read standard input.\n"
+	);
+}
+
+static void
 print_version()
 {
 	printf(
@@ -93,6 +265,5 @@ print_version()
 		"This is free software: you are free to change and redistribute it.\n"
 		"There is NO WARRANTY, to the extent permitted by law.\n"
 	, qs_version());
-	return EXIT_SUCCESS;
 }
 

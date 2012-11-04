@@ -30,12 +30,16 @@
 # OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-AC_PREREQ(2.59)
+AC_PREREQ(2.60)
+
 AC_COPYRIGHT([Copyright (c) 2012 Dridi Boukelmoune <dridi.boukelmoune@gmail.com>])
 AC_INIT(querysort, 1.1.0, https://github.com/dridi/querysort/issues)
+
 AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_SRCDIR([src])
 AC_CONFIG_HEADERS([config.h])
+
+AC_USE_SYSTEM_EXTENSIONS
 
 AC_LANG(C)
 
@@ -54,13 +58,13 @@ AC_PROG_LIBTOOL
 AC_PROG_MAKE_SET
 
 # Checks for header files.
-AC_CHECK_HEADERS([errno.h stdio.h stdlib.h string.h uriparser/Uri.h check.h])
+AC_CHECK_HEADERS([check.h errno.h fcntl.h stdio.h stdlib.h string.h uriparser/Uri.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
 
 # Checks for library functions.
 AC_FUNC_MALLOC
-AC_CHECK_FUNCS([strchr strerror])
+AC_CHECK_FUNCS([fileno posix_fadvise strchr strerror])
 
 AC_OUTPUT([Makefile src/Makefile man/Makefile test/Makefile])
 
