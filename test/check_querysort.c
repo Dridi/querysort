@@ -130,32 +130,32 @@ static struct test_case TEST_CASES_QS_SORT[] =
 static struct test_case TEST_CASES_QS_SORT_CLEAN[] =
 {
     /* empty query parameters */
-    { "http://localhost?&", QS_OK, "http://localhost?"},
-    { "http://localhost?&&&&", QS_OK, "http://localhost?"},
-    { "http://localhost?a=1&", QS_OK, "http://localhost?a=1"},
-    { "http://localhost?a=1&&&&&", QS_OK, "http://localhost?a=1"},
-    { "http://localhost?a=1&b=2&", QS_OK, "http://localhost?a=1&b=2"},
-    { "http://localhost?b=2&a=1&", QS_OK, "http://localhost?a=1&b=2"},
-    { "http://localhost?a=1&b=2&&&&&", QS_OK, "http://localhost?a=1&b=2"},
-    { "http://localhost?b=2&a=1&&&&&", QS_OK, "http://localhost?a=1&b=2"},
+    { "http://localhost?&", QS_CLEANED, "http://localhost?"},
+    { "http://localhost?&&&&", QS_CLEANED, "http://localhost?"},
+    { "http://localhost?a=1&", QS_CLEANED, "http://localhost?a=1"},
+    { "http://localhost?a=1&&&&&", QS_CLEANED, "http://localhost?a=1"},
+    { "http://localhost?a=1&b=2&", QS_CLEANED, "http://localhost?a=1&b=2"},
+    { "http://localhost?b=2&a=1&", QS_CLEANED, "http://localhost?a=1&b=2"},
+    { "http://localhost?a=1&b=2&&&&&", QS_CLEANED, "http://localhost?a=1&b=2"},
+    { "http://localhost?b=2&a=1&&&&&", QS_CLEANED, "http://localhost?a=1&b=2"},
     
     /* empty query parameters with fragments */
-    { "http://localhost?&#", QS_OK, "http://localhost?#"},
-    { "http://localhost?&#z=26&y=25", QS_OK, "http://localhost?#z=26&y=25"},
-    { "http://localhost?&&&&#", QS_OK, "http://localhost?#"},
-    { "http://localhost?&&&&#z=26&y=25", QS_OK, "http://localhost?#z=26&y=25"},
-    { "http://localhost?a=1&#", QS_OK, "http://localhost?a=1#"},
-    { "http://localhost?a=1&#z=26&y=25", QS_OK, "http://localhost?a=1#z=26&y=25"},
-    { "http://localhost?a=1&&&&&#", QS_OK, "http://localhost?a=1#"},
-    { "http://localhost?a=1&&&&&#z=26&y=25", QS_OK, "http://localhost?a=1#z=26&y=25"},
-    { "http://localhost?b=2&&a=1#", QS_OK, "http://localhost?a=1&b=2#"},
-    { "http://localhost?b=2&&a=1#z=26&y=25", QS_OK, "http://localhost?a=1&b=2#z=26&y=25"},
-    { "http://localhost?a=1&b=2&#", QS_OK, "http://localhost?a=1&b=2#"},
-    { "http://localhost?b=2&a=1&#", QS_OK, "http://localhost?a=1&b=2#"},
-    { "http://localhost?a=1&b=2&#z=26&y=25", QS_OK, "http://localhost?a=1&b=2#z=26&y=25"},
-    { "http://localhost?b=2&a=1&#z=26&y=25", QS_OK, "http://localhost?a=1&b=2#z=26&y=25"},
-    { "http://localhost?a=1&b=2&&&&&#", QS_OK, "http://localhost?a=1&b=2#"},
-    { "http://localhost?b=2&a=1&&&&&#", QS_OK, "http://localhost?a=1&b=2#"},
+    { "http://localhost?&#", QS_CLEANED, "http://localhost?#"},
+    { "http://localhost?&#z=26&y=25", QS_CLEANED, "http://localhost?#z=26&y=25"},
+    { "http://localhost?&&&&#", QS_CLEANED, "http://localhost?#"},
+    { "http://localhost?&&&&#z=26&y=25", QS_CLEANED, "http://localhost?#z=26&y=25"},
+    { "http://localhost?a=1&#", QS_CLEANED, "http://localhost?a=1#"},
+    { "http://localhost?a=1&#z=26&y=25", QS_CLEANED, "http://localhost?a=1#z=26&y=25"},
+    { "http://localhost?a=1&&&&&#", QS_CLEANED, "http://localhost?a=1#"},
+    { "http://localhost?a=1&&&&&#z=26&y=25", QS_CLEANED, "http://localhost?a=1#z=26&y=25"},
+    { "http://localhost?b=2&&a=1#", QS_CLEANED, "http://localhost?a=1&b=2#"},
+    { "http://localhost?b=2&&a=1#z=26&y=25", QS_CLEANED, "http://localhost?a=1&b=2#z=26&y=25"},
+    { "http://localhost?a=1&b=2&#", QS_CLEANED, "http://localhost?a=1&b=2#"},
+    { "http://localhost?b=2&a=1&#", QS_CLEANED, "http://localhost?a=1&b=2#"},
+    { "http://localhost?a=1&b=2&#z=26&y=25", QS_CLEANED, "http://localhost?a=1&b=2#z=26&y=25"},
+    { "http://localhost?b=2&a=1&#z=26&y=25", QS_CLEANED, "http://localhost?a=1&b=2#z=26&y=25"},
+    { "http://localhost?a=1&b=2&&&&&#", QS_CLEANED, "http://localhost?a=1&b=2#"},
+    { "http://localhost?b=2&a=1&&&&&#", QS_CLEANED, "http://localhost?a=1&b=2#"},
 };
 
 START_TEST(test_qs_sort)
@@ -169,7 +169,11 @@ START_TEST(test_qs_sort)
         : &TEST_CASES_QS_SORT[_i - ARRAYSIZE(TEST_CASES_COMMON)];
 
     ret = qs_sort(t->src, actual_result);
-    fail_if(ret != t->expected_ret);
+
+    fail_if(ret != t->expected_ret,
+            "Source \"%s\" Expected %d Actual %d",
+            t->src, t->expected_ret, ret);
+
     if (ret == QS_OK) {
         fail_if(strcmp(actual_result, t->expected_result) != 0,
                 "Source \"%s\" Expected \"%s\" Actual \"%s\"",
@@ -189,7 +193,11 @@ START_TEST(test_qs_sort_clean)
         : &TEST_CASES_QS_SORT_CLEAN[_i - ARRAYSIZE(TEST_CASES_COMMON)];
 
     ret = qs_sort_clean(t->src, actual_result);
-    fail_if(ret != t->expected_ret);
+
+    fail_if(ret != t->expected_ret,
+            "Source \"%s\" Expected %d Actual %d",
+            t->src, t->expected_ret, ret);
+
     if (ret == QS_OK) {
         fail_if(strcmp(actual_result, t->expected_result) != 0,
                 "Source \"%s\" Expected \"%s\" Actual \"%s\"",

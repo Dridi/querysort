@@ -113,9 +113,7 @@ sort(const char *url, char *sorted_url, bool clean)
 	qs.copy = &copy_string;
 	qs.append = &append_string;
 	
-	sort_query(&qs);
-	
-	return QS_OK;
+	return sort_query(&qs);
 }
 
 static int
@@ -134,13 +132,13 @@ fsort(const char *url, FILE *stream, bool clean) {
 	qs.append = &fappend_string;
 
 	clearerr(stream);
-	sort_query(&qs);
+	int return_code = sort_query(&qs);
 
 	if ( ferror(stream) ) {
 		return QS_ERROR;
 	}
 
-	return QS_OK;
+	return return_code;
 }
 
 /* private functions : write output */
@@ -173,17 +171,19 @@ fappend_string(struct query_sort *qs, const char *source) {
 
 /* private functions : query sort algorithm */
 
-static void
+static int
 sort_query(struct query_sort *qs)
 {
 	search_query(qs);
 
 	if (qs->query_string == NULL) {
 		qs->append(qs, qs->url);
-		return;
+		return QS_OK;
 	}
 	
 	qs->copy(qs, qs->url, qs->query_string - qs->url);
+
+	int return_code = QS_OK;
 
 	if( EOQS(qs->query_string[0]) ) {
 		// no params, append the end of the url
@@ -202,9 +202,13 @@ sort_query(struct query_sort *qs)
 		qsort(params, qs->count, sizeof(struct query_param), compare_params);
 		
 		/* append the sorted parameters and the end of the url */
-		append_params(qs);
+		if ( append_params(qs) ) {
+			return_code = QS_CLEANED;
+		}
 		qs->append(qs, eoqs);
 	}
+	
+	return return_code;
 }
 
 static void
@@ -267,12 +271,14 @@ compare_params(const void *a, const void *b)
 	return (compare == 0) ? x->length - y->length : compare;
 }
 
-static void
+static bool
 append_params(struct query_sort *qs)
 {
+	bool had_to_clean = false;
 	bool add_separator = false;
 	for (int p = 0; p < qs->count; p++) {
 		if (qs->clean && qs->params[p].length == 0) {
+			had_to_clean = true;
 			continue;
 		}
 		if (add_separator) {
@@ -281,5 +287,6 @@ append_params(struct query_sort *qs)
 		qs->copy(qs, qs->params[p].value, qs->params[p].length);
 		add_separator = true;
 	}
+	return had_to_clean;
 }
 

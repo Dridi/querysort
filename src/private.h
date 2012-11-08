@@ -58,11 +58,11 @@ static void append_string(struct query_sort*, const char*);
 static void   fcopy_string(struct query_sort*, const char*, size_t);
 static void fappend_string(struct query_sort*, const char*);
 
+static       int      sort_query(struct query_sort*);
 static       void   search_query(struct query_sort*);
-static       void     sort_query(struct query_sort*);
 static       void   count_params(struct query_sort*);
 static const char* search_params(struct query_sort*);
-static       void  append_params(struct query_sort*);
+static       bool  append_params(struct query_sort*);
 
 static int compare_params(const void*, const void*);
 

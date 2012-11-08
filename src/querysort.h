@@ -46,7 +46,8 @@ __BEGIN_DECLS
  */
 enum {
 	QS_OK,
-	QS_ERROR
+	QS_ERROR,
+	QS_CLEANED
 };
 
 /**

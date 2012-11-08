@@ -157,6 +157,12 @@ sort_string(const char *string) {
 		case QS_OK:
 			putchar('\n');
 			break;
+		case QS_CLEANED:
+			putchar('\n'); /* flush stdout *before* writing to stderr */
+			if (verbose_flag) {
+				error(0, 0, "invalid uri was cleaned <%s>", string);
+			}
+			break;
 		case QS_ERROR:
 			error(0, errno, "an error occured");
 			return EXIT_FAILURE;
