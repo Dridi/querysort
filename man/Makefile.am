@@ -31,4 +31,8 @@
 #
 
 dist_man_MANS = querysort.1 querysort.3
+CLEANFILES = $(dist_man_MANS)
+
+$(dist_man_MANS):
+	${RST2MAN} $@.rst $@
 

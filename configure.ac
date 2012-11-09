@@ -57,6 +57,18 @@ AC_PROG_INSTALL
 AC_PROG_LIBTOOL
 AC_PROG_MAKE_SET
 
+AC_CHECK_PROGS(
+	PYTHON,
+	[python3 python3.1 python3.2 python2.7 python2.6 python2.5 python2 python],
+	[AC_MSG_ERROR([Python is needed to build the manual pages.])]
+)
+
+AC_CHECK_PROGS(
+	RST2MAN,
+	[rst2man rst2man.py],
+	[AC_MSG_ERROR([rst2man is needed to build the manual pages.])]
+)
+
 # Checks for header files.
 AC_CHECK_HEADERS([check.h errno.h fcntl.h stdio.h stdlib.h string.h uriparser/Uri.h])
 

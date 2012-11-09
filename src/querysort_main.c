@@ -250,7 +250,7 @@ print_help()
 		"Mandatory arguments to long options are mandatory for short options too.\n"
 		"  -d, --delimiter=DELIM   use DELIM instead of EOL for field delimiter\n"
 		"  -f, --file=FILE         read URIs from FILE\n"
-		"  -n, --no-clean          do not clean the URIs (remove empty parameters)\n"
+		"  -n, --no-clean          do not discard empty parameters in URIs\n"
 		"  -v, --verbose           provide more detailed information\n"
 		"\n"
 		"      --help     display this help and exit\n"
