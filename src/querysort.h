@@ -68,25 +68,47 @@ qs_sort_copy(const char *uri);
  * is made.
  * 
  * @param uri the given URI to sort
- * @param sorted_uri the placeholder for the sorted URI
+ * @param destination the placeholder for the sorted URI
  */
 int
-qs_sort(const char *uri, char *sorted_uri);
+qs_sort(const char *uri, char *destination);
 
 /**
  * Writes the given URI with its querystring sorted to the destination. The URI
  * is assumed to be valid. If the URI doesn't have a querystring, a simple copy
  * is made. This function discards empty parameters in the querystring, if any.
  * 
+ * This function returns QS_CLEANED when it succeeds but had to remove empty
+ * parameters.
+ * 
  * @param uri the given URI to sort
- * @param sorted_uri the placeholder for the sorted URI
+ * @param destination the placeholder for the sorted URI
  */
 int
-qs_sort_clean(const char *uri, char *sorted_uri);
+qs_sort_clean(const char *uri, char *destination);
 
+/**
+ * Writes the given URI with its querystring sorted to the stream. The URI is
+ * assumed to be valid. If the URI doesn't have a querystring, a simple copy is
+ * made.
+ * 
+ * @param uri the given URI to sort
+ * @param stream the stream where the sorted URI is appened
+ */
 int
 qs_fsort(const char *uri, FILE *stream);
 
+/**
+ * Writes the given URI with its querystring sorted to the stream. The URI is
+ * assumed to be valid. If the URI doesn't have a querystring, a simple copy is
+ * made. This function discards empty parameters in the querystring, if any.
+ * 
+ * This function returns QS_CLEANED when it succeeds but had to remove empty
+ * parameters.
+ * 
+ * @param uri the given URI to sort
+ * @param stream the stream where the sorted URI is appened
+ */
 int
 qs_fsort_clean(const char *uri, FILE *stream);
 

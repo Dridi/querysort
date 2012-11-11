@@ -74,15 +74,15 @@ qs_sort_copy(const char *url)
 }
 
 extern int
-qs_sort(const char *url, char *sorted_url)
+qs_sort(const char *url, char *destination)
 {
-	return sort(url, sorted_url, false);
+	return sort(url, destination, false);
 }
 
 extern int
-qs_sort_clean(const char *url, char *sorted_url)
+qs_sort_clean(const char *url, char *destination)
 {
-	return sort(url, sorted_url, true);
+	return sort(url, destination, true);
 }
 
 extern int
@@ -98,9 +98,9 @@ qs_fsort_clean(const char *url, FILE *stream) {
 /* private functions : helpers */
 
 static int
-sort(const char *url, char *sorted_url, bool clean)
+sort(const char *url, char *destination, bool clean)
 {
-	if (url == NULL || sorted_url == NULL) {
+	if (url == NULL || destination == NULL) {
 		errno = EFAULT;
 		return QS_ERROR;
 	}
@@ -109,7 +109,7 @@ sort(const char *url, char *sorted_url, bool clean)
 	
 	qs.url = url;
 	qs.clean = clean;
-	qs.destination = sorted_url;
+	qs.destination = destination;
 	qs.copy = &copy_string;
 	qs.append = &append_string;
 	
